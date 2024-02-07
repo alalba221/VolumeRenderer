@@ -26,7 +26,7 @@ project "Sandbox"
 
     defines
 	{
-      
+      "NOMINMAX",
 	}
    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
    objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")

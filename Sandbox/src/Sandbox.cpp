@@ -3,6 +3,8 @@
 #include "LinearAlgebra.h"
 class Sandbox : public Alalba::Application
 {
+
+//typedef std::shared_ptr < lux::Volume<lux::Color>> ColorField;
 public:
 	Sandbox()
 	{
@@ -39,10 +41,10 @@ public:
 			std::string output = "image/" + index + ".exr";
 
 			
-			lux::Matrix camRotate;
-			camRotate = lux::rotation(lux::Vector(0.0, 1.0, 0.0), i*step);
-			lux::Vector eye = camRotate * m_camera->eye();
-			lux::Vector view = camRotate * m_camera->view();
+			lux::Matrix camRotateMatrix;
+			camRotateMatrix = lux::rotation(lux::Vector(0.0, 1.0, 0.0), step);
+			lux::Vector eye = camRotateMatrix * m_camera->eye();
+			lux::Vector view = lux::Vector(0.0, 0.0, 0.0) - eye;
 			m_camera->setEyeViewUp(eye, view, lux::Vector(0, 1, 0));
 
 			m_renderer->Render(*m_camera.get(), m_head);
@@ -67,93 +69,45 @@ public:
 		m_camera->setFarPlane(9.);
 		
 
-		m_renderer.reset(new Alalba::Renderer(160, 90));
+		m_renderer.reset(new Alalba::Renderer(1920, 1080));
 		
+		Alalba::ColorField redColor;
+		redColor.reset(new Alalba::ConstantColor(lux::Color(1.0, 0.0, 0.0, 1.0)));
+
+		Alalba::ColorField greenColor;
+		greenColor.reset(new Alalba::ConstantColor(lux::Color(0.0, 1.0, 0.0, 1.0)));
+
+		Alalba::ColorField blueColor;
+		blueColor.reset(new Alalba::ConstantColor(lux::Color(0.0, 0.0, 1.0, 1.0)));
+
 		
 
-		////// design
-		lux::Color boundingboxColor = lux::Color(.3, .3, .3, 0.0);
-		m_boundingbox = Alalba::Object(s_box, boundingboxColor);
+		s_sphere = std::make_shared<Alalba::Sphere>(lux::Vector(0.0, 0.0, 0.0), 2);
+		s_sphere2 = std::make_shared<Alalba::Sphere>(lux::Vector(0.0, 0.0, 0.0), 2);
 		
-		// -6
-		/// head
-		lux::Color headColor = lux::Color(0.5, 0.5, 0., 0.0);
-		m_head = Alalba::Object(s_sphere, headColor);
-		m_head.Scale(lux::Vector(0.25, 0.25, 0.25)).Translate(lux::Vector(0.0, 1.5, 0.0));
+
+		
+		
+		/// <summary>
+		///TODO:  Why can't pass the shared pointer of subclass to a shared pointer of base class 
+		/// https://stackoverflow.com/questions/13403490/passing-shared-ptrderived-as-shared-ptrbase
+		/// like:
+		///  Alalba::ColorField makedCOLOR = Alalba::Multiply(unioncolor, Alalba::Union<float>(s_translate, s_translate2));
+		/// but :
+		/// Alalba::ColorField makedCOLOR = Alalba::Multiply(unioncolor, std::dynamic_pointer_cast<lux::Volume<float>, Alalba::UnionVolume<float> >( Alalba::Union<float>(s_translate, s_translate2)));
+		/// </summary>
 	
 		
-		//m_boundingbox.Union(m_head);
+		Alalba::ColorField woodColor;
+		woodColor.reset(new Alalba::ConstantColor(lux::Color(86.0/255, 47.0/255.0, 14.0/255.0, 1.0)));
 		
-		/// body
-		lux::Color bodyColor = lux::Color(1., 0., 0., 0.0);
-		m_body = Alalba::Object(s_box, bodyColor);
-		m_body.Scale(lux::Vector(0.25,0.5,0.25));
+		m_bag = Alalba::Translate(Alalba::Object(s_sphere, woodColor), lux::Vector(1.0, 0.0, 0.0));
+		m_body = Alalba::Translate(Alalba::Object(s_sphere2, greenColor), lux::Vector(-1.0, 0.0, 0.0));
+		
+		m_head = Alalba::Union(m_bag, m_body);
 
-		// skirt
-		lux::Color skirtColor = lux::Color(0., 1., 0., 0.0);
-		Alalba::Object skirt = Alalba::Object(s_cone, skirtColor);
-		skirt.Scale(lux::Vector(1., 0.5, 1.)).Rotate(lux::Vector(0.0,0.0,1.0),M_PI);
-	
-		
-		// //
-		
-		
-		/// legs
-		m_lleg = Alalba::Object(s_ellipse, headColor);
-		m_lleg.Scale(lux::Vector(0.5, 0.5, 0.5));
-		m_lleg.Rotate(lux::Vector(0.,0.,1.),M_PI*0.4).Translate(lux::Vector(-0.4, -1.4, 0.));
-
-		m_rleg = Alalba::Object(s_ellipse, headColor);
-		m_rleg.Scale(lux::Vector(0.5, 0.5, 0.5));
-		m_rleg.Rotate(lux::Vector(0., 0., 1.), M_PI * (1-0.4)).Translate(lux::Vector(0.4, -1.4, 0.));
 
 		
-		///  arms
-		m_larm = Alalba::Object(s_ellipse, headColor);
-		m_larm.Scale(lux::Vector(0.3, 0.3, 0.3));
-		m_larm.Translate(lux::Vector(-1.1, 0.5, 0.));
-
-		m_rarm = Alalba::Object(s_ellipse, headColor);
-		m_rarm.Scale(lux::Vector(0.3, 0.3, 0.3));
-		m_rarm.Translate(lux::Vector(1.1, 0.5, 0.));
-		// //
-		
-		
-		///bracelet
-		lux::Color otherColor = lux::Color(0., 0., 10., 0.0);
-		m_bracelet = Alalba::Object(s_icosahedron, otherColor);
-		m_bracelet.Scale(lux::Vector(0.05, 0.05, 0.05)).Translate(lux::Vector(0.0,0.0,0.6));
-
-		/// glasses
-		lux::Color glassColor = lux::Color(1., 1., 0., 0.0);
-		m_glasses = Alalba::Object(s_torus, glassColor);
-		m_glasses.Scale(lux::Vector(0.125, 0.125, 1.)).Translate(lux::Vector(0.2, 1.5, 0.0));
-		
-		Alalba::Object sphere1 = Alalba::Object(s_sphere, glassColor);
-		sphere1.Scale(lux::Vector(0.125, 0.125, 0.125)).Translate(lux::Vector(0.2, 1.5, 0.0));
-
-		Alalba::Object otherglass = Alalba::Object(s_torus, glassColor);
-		otherglass.Scale(lux::Vector(0.125, 0.125, 1.)).Translate(lux::Vector (- 0.2, 1.5, 0.0));
-
-		Alalba::Object sphere2 = Alalba::Object(s_sphere, glassColor);
-		sphere2.Scale(lux::Vector(0.125, 0.125, 0.125)).Translate(lux::Vector(- 0.2, 1.5, 0.0));
-
-		m_glasses.Union(otherglass);
-		sphere1.Intersection(otherglass);
-		sphere2.Intersection(m_glasses);
-		sphere1.Union(sphere2);
-
-		m_glasses.CutOut(sphere1).Translate(lux::Vector(0.0, 0.0, 0.6));
-
-		/// m_bag 
-		m_bag = Alalba::Object(s_steiner, otherColor);
-		m_bag.Scale(lux::Vector(0.5, 0.5, 0.5)).Translate(lux::Vector(-0.6,0.0,0.0));
-		
-		// compose
-		m_body.CutOut(skirt).Union(skirt);
-		m_body.Union(m_lleg).Union(m_rleg).Union(m_rarm).Union(m_larm);
-		m_head.Union(m_glasses).Union(m_body).Union(m_bracelet).Union(m_bag);
-
 	}
 
 	virtual void OnShutdown() override
@@ -164,7 +118,11 @@ public:
 	}
 
 private:
+
+
+
 	// primitives
+	std::shared_ptr<Alalba::Sphere> s_sphere2;
 	std::shared_ptr<Alalba::Sphere> s_sphere;
 	std::shared_ptr<Alalba::Ellipse> s_ellipse;
 	std::shared_ptr<Alalba::Box> s_box;
@@ -184,7 +142,6 @@ private:
 	Alalba::Object m_bracelet;
 	Alalba::Object m_glasses;
 	Alalba::Object m_bag;
-	//Alalba::Object m_sphere2;
 
 	std::unique_ptr<lux::Camera> m_camera;
 	std::unique_ptr<Alalba::Renderer> m_renderer;

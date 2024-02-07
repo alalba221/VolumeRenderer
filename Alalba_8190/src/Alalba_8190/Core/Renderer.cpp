@@ -12,7 +12,7 @@ namespace Alalba
   void Renderer::Render(const lux::Camera& camera, const Object& object)
   {
     m_rayMarcher.reset(new RayMarcher(camera, m_width, m_height));
-    m_rayMarcher->RayMarch(object.SDF(),object.Density(),object.Color());
+    m_rayMarcher->RayMarch(object.Density(),object.ColorFiled());
     
     m_frameBuffer = m_rayMarcher->GetResult();
   }

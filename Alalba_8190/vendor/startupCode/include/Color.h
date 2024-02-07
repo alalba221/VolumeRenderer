@@ -102,6 +102,10 @@ class Color
       return Color(xyzw[0]*v, xyzw[1]*v, xyzw[2]*v, xyzw[3]*v); 
    }
   
+   const Color operator*        (const float& v) const
+   {
+     return Color(xyzw[0] * v, xyzw[1] * v, xyzw[2] * v, xyzw[3] * v);
+   }
    //! divide number to all colors
    const Color operator/        (const double& v) const 
    { 

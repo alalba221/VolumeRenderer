@@ -1,44 +1,38 @@
 #pragma once
 #include"Volume.h"
-#include"Alalba_8190/Core/Transform/Transform.h"
+
+#include "Fields.h"
+
+typedef std::shared_ptr<lux::Volume<float>> ScalarField;
+typedef std::shared_ptr < lux::Volume<lux::Color>> ColorField;
+
 namespace Alalba
 {
 	class Object
 	{
 	public:
 		Object() {};
-		Object(const std::shared_ptr<lux::Volume<float>>& sdf, lux::Color color);
+		
+		Object(const ScalarField& sdf, const ColorField& color_field);
 		
 		~Object() 
 		{
 			
 		};
 		
-		const float sdfEval(const lux::Vector& p) const { return m_sdf->eval(p); };
-		const float densityEval(const lux::Vector& p) const { return m_densityField->eval(p); };
-		const lux::Color dcolorEval(const lux::Vector& p) const { return m_colorField->eval(p); };
-
-		Object& Union(const Object& obj);
-		Object& Intersection(const Object& obj);
-		Object& CutOut(const Object& obj);
 		
-		Object& Translate(const lux::Vector& dX);
-		Object& Rotate(const lux::Vector& axis, float rad);
-		Object& Scale(const lux::Vector& scale);
-
-		const lux::Volume<float>& SDF() const { return *m_sdf; }
-		const lux::Volume<float>& Density() const{ return *m_densityField; }
-		const lux::Volume<lux::Color>& Color() const { return *m_colorField; }
+		const ScalarField& SDF() const { return m_sdf; }
+		const ColorField& ColorFiled() const { return m_colorField; }
+		const ScalarField& Density() const { return m_density; }
 
 	protected:
-		std::shared_ptr<lux::Volume<float>> m_sdf;
-		std::shared_ptr<lux::Volume<float>> m_densityField;
-		std::shared_ptr<lux::Volume<lux::Color> > m_colorField;
+		ScalarField m_sdf;
+		ColorField m_colorField;
 
-		lux::Color m_baseColor;
+		ScalarField m_density;
 
-		std::shared_ptr<lux::Volume<float>> m_sdfHistory;
-		std::shared_ptr<lux::Volume<float>> m_densityHistory;
-		std::shared_ptr<lux::Volume<lux::Color>> m_colorHistory;
 	};
+
+	Object Union(const Object& obj1, const Object& obj2);
+	Object Translate(const Object& obj, const lux::Vector& dx);
 }

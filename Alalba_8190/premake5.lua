@@ -48,6 +48,7 @@ project "Alalba_8190"
 		defines
 		{
 			"ALALBA_PLATFORM_WINDOWS",
+			"NOMINMAX",
 		}
 
 	filter "configurations:Debug"

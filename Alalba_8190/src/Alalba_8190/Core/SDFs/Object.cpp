@@ -1,106 +1,42 @@
 #include "pch.h"
 #include "Object.h"
-#include "Alalba_8190/Core/Transform/Operations.h"
-#include "Alalba_8190/Core/Transform/Transform.h"
-#include "Alalba_8190/Core/SDFs/Fields.h"
+
+#include "Alalba_8190/Core/Operations/Operations.h"
 namespace Alalba
 {
-	Object::Object(const std::shared_ptr<lux::Volume<float>>& sdf, lux::Color color)
-		:m_sdf(sdf), m_baseColor(color)
+	Object::Object(const ScalarField& sdf, const ColorField& color_field)
+		:m_sdf(sdf), m_colorField(color_field)
 	{
-		m_densityField.reset( new DensityField(m_sdf));
-		m_colorField.reset(new ColorField(m_sdf, m_baseColor));
+		m_density = Alalba::Clamp<float>(m_sdf, 0.0f, 1.0f);
 	}
 
-	Object& Object::Union(const Object& obj)
-	{
-		// sdf
-		m_sdfHistory = m_sdf;
-		m_sdf.reset( new SFUnion(m_sdfHistory, obj.m_sdf));
 
-		// density 
-		m_densityField.reset(new DensityField(m_sdf));
+	Object Translate(const Object& obj, const lux::Vector& dx)
+	{
+		ScalarField new_sdf = Alalba::Translate<float>(obj.SDF(),dx);
 		
-		// color 
-		m_colorHistory = m_colorField;
-		m_colorField.reset(new CFUnion(m_colorHistory, obj.m_colorField));
+		ColorField new_color = Alalba::Translate<lux::Color>(obj.ColorFiled(), dx);
 
-		return *this;
+		ScalarField mask = Alalba::Mask<float>(new_sdf);
+
+		new_color = Alalba::Multiply<lux::Color>(new_color, mask);
+
+		return Object(new_sdf, new_color);
+
 	}
 
-	Object& Object::Intersection(const Object& obj)
+	Object Union(const Object& obj1, const Object& obj2)
 	{
-		// sdf
-		m_sdfHistory = m_sdf;
-		m_sdf.reset(new SFIntersection(m_sdfHistory, obj.m_sdf));
+		ScalarField new_sdf = Alalba::Union<float>(obj1.SDF(), obj2.SDF());
 
-		// density 
-		m_densityField.reset(new DensityField(m_sdf));
+		ColorField new_color = Alalba::Union<lux::Color>(obj1.ColorFiled(), obj2.ColorFiled());
 
-		// color 
-		m_colorHistory = m_colorField;
-		m_colorField.reset(new CFIntersection(m_colorHistory, obj.m_colorField));
-		return *this;
+		ScalarField mask = Alalba::Mask<float>(new_sdf);
+
+		new_color = Alalba::Multiply<lux::Color>(new_color, mask);
+
+		return Object(new_sdf, new_color);
+
 	}
-
-	Object& Object::CutOut(const Object& obj)
-	{
-		// sdf
-		m_sdfHistory = m_sdf;
-		m_sdf.reset(new SFCutOut(m_sdfHistory, obj.m_sdf));
-
-		// density 
-		m_densityField.reset(new DensityField(m_sdf));
-
-		// color 
-		m_colorHistory = m_colorField;
-		/// TODO: decide which one to use
-		//m_colorField.reset(new CFCutOut(m_colorHistory, obj.m_colorField));
-		m_colorField.reset(new ColorField(m_sdf, m_baseColor));
-		return *this;
-	}
-
-	Object& Object::Translate(const lux::Vector& dX)
-	{
-		// sdf
-		m_sdfHistory = m_sdf;
-		m_sdf.reset(new SFTranslate(m_sdfHistory, dX));
-
-		// color
-		//m_colorHistory = m_colorField;
-		//m_colorField.reset(new CFTranslate(m_colorHistory, dX));
-		m_colorField.reset(new ColorField(m_sdf, m_baseColor));
-		// density
-		m_densityField.reset(new DensityField(m_sdf));
-		return *this;
-	}
-	Object& Object::Rotate(const lux::Vector& axis, float rad)
-	{
-		// sdf
-		m_sdfHistory = m_sdf;
-		m_sdf.reset(new SFRotation(m_sdfHistory, axis ,rad));
-
-		// color
-		//m_colorHistory = m_colorField;
-		//m_colorField.reset(new CFRotation(m_colorHistory, axis, rad));
-		m_colorField.reset(new ColorField(m_sdf, m_baseColor));
-
-		// density
-		m_densityField.reset(new DensityField(m_sdf));
-		return *this;
-	}
-	Object& Object::Scale(const lux::Vector& scale)
-	{
-		// sdf
-		m_sdfHistory = m_sdf;
-		m_sdf.reset(new SFScale(m_sdfHistory, scale));
-
-		// color
-		//m_colorHistory = m_colorField;
-		//m_colorField.reset(new CFScale(m_colorHistory, scale));
-		m_colorField.reset(new ColorField(m_sdf, m_baseColor));
-		// density
-		m_densityField.reset(new DensityField(m_sdf));
-		return *this;
-	}
+	
 }

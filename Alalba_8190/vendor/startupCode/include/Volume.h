@@ -163,7 +163,7 @@ class Volume : public VolumeBase
    typedef typename GradType<U>::GType volumeGradType;
 
    // svirtual const volumeDataType eval( const Vector& P ) const { volumeDataType base; base = base - base; return base; }
-   virtual const volumeDataType eval(const Vector& P) const { return volumeDataType(); }
+   virtual const volumeDataType eval(const Vector& P) const = 0;
    virtual const volumeGradType grad( const Vector& P ) const 
    {
       volumeDataType valueX, valueY, valueZ;

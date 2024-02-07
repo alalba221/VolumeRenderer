@@ -3,73 +3,83 @@
 #include "omp.h"
 namespace Alalba
 {
-	RayMarcher::RayMarcher(const lux::Camera& camera, signed int width, signed int height)
-		:m_camera(camera), m_width(width), m_height(height) 
+	RayMarcher::RayMarcher(const lux::Camera& camera, signed int width, signed int height, double deltaS, double K, double minT)
+		:m_camera(camera), m_width(width), m_height(height), m_deltaS(deltaS), m_K(K), m_minTransmisity(minT)
 	{
-		m_result.resize(width * height);
 		m_Lps.resize(width * height);
-		m_Ts.resize(width * height);
+		m_Transmissivities.resize(width * height);
 
-		m_Xs.resize(width * height);
-		m_Ss.resize(width * height);
+		m_Positions.resize(width * height);
+		m_distances.resize(width * height);
+
+		m_Directions.resize(width * height);
+		m_nearPlanes.resize(width * height);
+		m_farPlanes.resize(width * height);
+
+#pragma omp parallel for
+		for (signed int pixel = 0; pixel < m_width * m_height; pixel++)
+		{
+			// initialize m_Directions
+			double x = (double)(pixel % m_width) / (double)m_width;
+			double y = (double)(pixel / m_width) / (double)m_height;
+			m_Directions[pixel] = m_camera.view(x, y);
+
+			// initialize the distance for each ray to near and far plane
+			double cosine = m_Directions[pixel] * m_camera.view();
+			m_nearPlanes[pixel] = camera.nearPlane() / cosine;
+			m_farPlanes[pixel] = camera.farPlane() / cosine;
+		}
 	}
 	
-	void RayMarcher::MarchSigleLight(signed int index, const lux::Volume<float>& sdf,
-		const lux::Volume<float>& densityField,
-		const lux::Volume<lux::Color>& colorField)
+	void RayMarcher::MarchSigleLight(signed int index, 
+		const ScalarField& densityField,
+		const ColorField& colorField)
 	{
-		double x = (double)(index % m_width) / (double)m_width;
-		double y = (double)(index / m_width) / (double)m_height;
-		lux::Vector direction = m_camera.view(x, y);
+		lux::Vector direction = m_Directions[index];
+		double nearDistance = m_nearPlanes[index];
+		double farDistance = m_farPlanes[index];
 
 		m_Lps[index] = lux::Color(0.0, 0.0, 0.0, 0.0);
 		
-		m_Ts[index] = 1.0;
-		m_Xs[index] = m_camera.eye() + m_camera.nearPlane() * direction;
-		m_Ss[index] = m_camera.nearPlane();
+		m_Transmissivities[index] = 1.0;
 
-		while (m_Ss[index] < m_camera.farPlane())
+		m_Positions[index] = m_camera.eye() + nearDistance * direction;
+		m_distances[index] = nearDistance;
+
+		while (m_distances[index] < farDistance && m_Transmissivities[index] > m_minTransmisity)
 		{
-
-			m_Xs[index] += m_deltaS * direction;
-			m_Ss[index] += m_deltaS;
-
-			//float desity = sdf.eval(m_Xs[index])<=0?0.0:1.0;
-			float desity = densityField.eval(m_Xs[index]);
+			
+			float desity = densityField->eval(m_Positions[index]);
 			double deltaT = 0.0;
 
 			if (desity >= 0)
 			{
-				//const lux::Color color = lux::Color(1.0,0.0,0.0,0.0);
-				const lux::Color color = colorField.eval(m_Xs[index]);
+			
+				const lux::Color color = colorField->eval(m_Positions[index]);
 				deltaT = exp(-m_K * m_deltaS * desity);
 
-				m_Lps[index] += color * (1.0 - deltaT) * m_Ts[index] / m_K;
+				m_Lps[index] += color * (1.0 - deltaT) * m_Transmissivities[index] / m_K;
 
-				m_Ts[index] *= deltaT;
+				m_Transmissivities[index] *= deltaT;
 			} // end if
+
+			m_Positions[index] += m_deltaS * direction;
+			m_distances[index] += m_deltaS;
 		}//end while
 
-		m_Lps[index][3] = 1.0 - m_Ts[index];
+		m_Lps[index][3] = 1.0 - m_Transmissivities[index];
 
-		m_result[index] = m_Lps[index];
 	}
 
-	void RayMarcher::RayMarch(const lux::Volume<float>& sdf,
-		const lux::Volume<float>& densityFiled,
-		const lux::Volume<lux::Color>& colorFiled)
+	void RayMarcher::RayMarch(const ScalarField& densityFiled, const ColorField& colorFiled)
 	{
+
 #pragma omp parallel for
 		for (signed int pixel = 0; pixel < m_width * m_height; pixel++)
 		{
-			//ALALBA_TRACE(": {0} / {1}", pixel, m_width * m_height);
-			//double x = (double)(pixel % m_width)/(double)m_width;
-			//double y = (double)(pixel / m_width)/(double)m_height;
-
-			//lux::Vector direction = m_camera.view(x, y);
 		
-			MarchSigleLight(pixel, sdf, densityFiled, colorFiled);
-			//m_result[pixel] = m_Lp;
+			MarchSigleLight(pixel, densityFiled, colorFiled);
+
 		}// end for
 
 		
