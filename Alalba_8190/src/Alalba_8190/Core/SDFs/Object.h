@@ -33,6 +33,7 @@ namespace Alalba
 
 	};
 
-	Object Union(const Object& obj1, const Object& obj2);
-	Object Translate(const Object& obj, const lux::Vector& dx);
+	//Object Union(const Object& obj1, const Object& obj2);
+	//Object Translate(const Object& obj, const lux::Vector& dx);
+
 }

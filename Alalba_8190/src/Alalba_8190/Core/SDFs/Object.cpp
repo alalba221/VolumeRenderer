@@ -11,32 +11,32 @@ namespace Alalba
 	}
 
 
-	Object Translate(const Object& obj, const lux::Vector& dx)
-	{
-		ScalarField new_sdf = Alalba::Translate<float>(obj.SDF(),dx);
-		
-		ColorField new_color = Alalba::Translate<lux::Color>(obj.ColorFiled(), dx);
+	//Object Translate(const Object& obj, const lux::Vector& dx)
+	//{
+	//	ScalarField new_sdf = Alalba::Translate<float>(obj.SDF(),dx);
+	//	
+	//	ColorField new_color = Alalba::Translate<lux::Color>(obj.ColorFiled(), dx);
 
-		ScalarField mask = Alalba::Mask<float>(new_sdf);
+	//	ScalarField mask = Alalba::Mask<float>(new_sdf);
 
-		new_color = Alalba::Multiply<lux::Color>(new_color, mask);
+	//	new_color = Alalba::Multiply<lux::Color>(new_color, mask);
 
-		return Object(new_sdf, new_color);
+	//	return Object(new_sdf, new_color);
 
-	}
+	//}
 
-	Object Union(const Object& obj1, const Object& obj2)
-	{
-		ScalarField new_sdf = Alalba::Union<float>(obj1.SDF(), obj2.SDF());
+	//Object Union(const Object& obj1, const Object& obj2)
+	//{
+	//	ScalarField new_sdf = Alalba::Union<float>(obj1.SDF(), obj2.SDF());
 
-		ColorField new_color = Alalba::Union<lux::Color>(obj1.ColorFiled(), obj2.ColorFiled());
+	//	ColorField new_color = Alalba::Union<lux::Color>(obj1.ColorFiled(), obj2.ColorFiled());
 
-		ScalarField mask = Alalba::Mask<float>(new_sdf);
+	//	ScalarField mask = Alalba::Mask<float>(new_sdf);
 
-		new_color = Alalba::Multiply<lux::Color>(new_color, mask);
+	//	new_color = Alalba::Multiply<lux::Color>(new_color, mask);
 
-		return Object(new_sdf, new_color);
+	//	return Object(new_sdf, new_color);
 
-	}
+	//}
 	
 }

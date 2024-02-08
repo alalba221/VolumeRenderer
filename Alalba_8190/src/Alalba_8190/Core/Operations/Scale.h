@@ -9,7 +9,7 @@ namespace Alalba
 	class ScaleVolume : public lux::Volume<T>
 	{
 	public:
-		ScaleVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, const T& scale )
+		ScaleVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, const lux::Vector& scale )
 			:m_fieldPtr1(fieldPtr1), m_scale(scale) {};
 		~ScaleVolume() {};
 
@@ -18,32 +18,21 @@ namespace Alalba
 	private:
 
 		std::shared_ptr< lux::Volume<T> > m_fieldPtr1;
-		T m_scale;
+		lux::Vector m_scale;
 	};
 
 	// Scalar
 	template<>
-	class ScaleVolume<float> : public lux::Volume<float>
+	virtual const float ScaleVolume<float>::eval(const lux::Vector& P) const 
 	{
-	public:
-		ScaleVolume(std::shared_ptr< lux::Volume<float> > fieldPtr1, const float& scale)
-			:m_fieldPtr1(fieldPtr1), m_scale(scale) {};
-		~ScaleVolume() {};
-
-		virtual const float eval(const lux::Vector& P) const override
-		{
-			return m_fieldPtr1->eval(P/m_scale);
-		};
-	private:
-
-		std::shared_ptr< lux::Volume<float> > m_fieldPtr1;
-		float m_scale;
+		lux::Vector scaled = lux::Vector(P.X() / m_scale.X(), P.Y() / m_scale.Y(), P.Z() / m_scale.Z());
+		return m_fieldPtr1->eval(scaled);
 	};
-
+	
 
 	template<typename T>
 	std::shared_ptr<ScaleVolume<T>> Scale(std::shared_ptr< lux::Volume<T> > fieldPtr1,
-		const T& scale)
+		const lux::Vector& scale)
 	{
 		return std::make_shared< ScaleVolume<T> >(fieldPtr1, scale);
 	}

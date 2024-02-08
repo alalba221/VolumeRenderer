@@ -9,10 +9,10 @@ namespace Alalba
 
   }
 
-  void Renderer::Render(const lux::Camera& camera, const Object& object)
+  void Renderer::Render(const lux::Camera& camera, const ScalarField& densityField, const ColorField& colorField)
   {
     m_rayMarcher.reset(new RayMarcher(camera, m_width, m_height));
-    m_rayMarcher->RayMarch(object.Density(),object.ColorFiled());
+    m_rayMarcher->RayMarch(densityField, colorField);
     
     m_frameBuffer = m_rayMarcher->GetResult();
   }

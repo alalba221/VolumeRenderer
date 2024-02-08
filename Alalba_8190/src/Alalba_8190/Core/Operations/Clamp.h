@@ -23,38 +23,25 @@ namespace Alalba
 
 	/// Scalar
 	template<>
-	class ClampVolume<float> : public lux::Volume<float>
+	virtual const float ClampVolume<float>::eval(const lux::Vector& P) const override
 	{
-	public:
-		ClampVolume(std::shared_ptr< lux::Volume<float> > fieldPtr1, const float& min, const float& max)
-			:m_fieldPtr1(fieldPtr1), m_min(min), m_max(max) {};
-		~ClampVolume() {};
-
-		virtual const float eval(const lux::Vector& P) const override
+		float value = m_fieldPtr1->eval(P);
+		
+		if (value <= m_min)
 		{
-			if (m_fieldPtr1->eval(P) <= m_min)
-			{
-				return m_min;
-			}
-			else if (m_fieldPtr1->eval(P) >= m_max)
-			{
-				return m_max;
-			}
-			else
-			{
-				return m_fieldPtr1->eval(P);
-			}
-		};
-
-	private:
-		std::shared_ptr< lux::Volume<float> > m_fieldPtr1;
-		float m_min;
-		float m_max;
+			return m_min;
+		}
+		else if (value >= m_max)
+		{
+			return m_max;
+		}
+		else
+		{
+			return value;
+		}
 	};
 
-
-
-
+	
 	template<typename T>
 	std::shared_ptr<ClampVolume<T>> Clamp(std::shared_ptr< lux::Volume<T> > fieldPtr1, const T& min, const T& max)
 	{

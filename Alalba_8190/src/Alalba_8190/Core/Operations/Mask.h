@@ -21,25 +21,11 @@ namespace Alalba
 
 	/// Scalar
 	template<>
-	class MaskVolume<float> : public lux::Volume<float>
+	virtual const float MaskVolume<float> ::eval(const lux::Vector& P) const
 	{
-	public:
-		MaskVolume(std::shared_ptr< lux::Volume<float> > fieldPtr1)
-			:m_fieldPtr1(fieldPtr1){};
-		~MaskVolume() {};
-
-		virtual const float eval(const lux::Vector& P) const override
-		{
-			return m_fieldPtr1->eval(P) > 0.0 ? 1 : 0;
-		};
-
-	private:
-		std::shared_ptr< lux::Volume<float> > m_fieldPtr1;
-
+		return m_fieldPtr1->eval(P) > 0.0 ? 1 : 0;
 	};
-
-
-
+	
 
 	template<typename T>
 	std::shared_ptr<MaskVolume<T>> Mask(std::shared_ptr< lux::Volume<T> > fieldPtr1)

@@ -12,7 +12,7 @@ namespace Alalba
 		Renderer(signed int width, signed int height);
 		~Renderer() {};
 		
-		void Render(const lux::Camera& camera, const Object& oject);
+		void Render(const lux::Camera& camera, const ScalarField& densityField, const ColorField& colorField );
 
 		bool SaveImage(const char* outfilename);
 
