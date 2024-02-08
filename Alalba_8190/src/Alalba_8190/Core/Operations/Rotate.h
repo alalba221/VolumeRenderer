@@ -15,7 +15,8 @@ namespace Alalba
 		{ 
 
 			lux::Matrix rotationMatrix = lux::rotation(m_axis, m_rad);
-			return m_fieldPtr->eval(rotationMatrix.inverse() * P);
+			//return m_fieldPtr->eval(rotationMatrix.inverse() * P);
+			return m_fieldPtr->eval(rotationMatrix.transpose() * P);
 		};
 
 	private:
