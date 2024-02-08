@@ -7,7 +7,7 @@ namespace Alalba
 	class MaskVolume : public lux::Volume<T>
 	{
 	public:
-		MaskVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1)
+		MaskVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1)
 			:m_fieldPtr1(fieldPtr1) {};
 		~MaskVolume() {};
 
@@ -28,7 +28,7 @@ namespace Alalba
 	
 
 	template<typename T>
-	std::shared_ptr<MaskVolume<T>> Mask(std::shared_ptr< lux::Volume<T> > fieldPtr1)
+	std::shared_ptr<MaskVolume<T>> Mask(const std::shared_ptr< lux::Volume<T> >& fieldPtr1)
 	{
 		return std::make_shared< MaskVolume<T> >(fieldPtr1);
 	}

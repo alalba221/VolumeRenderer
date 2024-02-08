@@ -9,7 +9,7 @@ namespace Alalba
 	class DilationVolume : public lux::Volume<T>
 	{
 	public:
-		DilationVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, const T& d)
+		DilationVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const T& d)
 			:m_fieldPtr1(fieldPtr1), m_d(d) {};
 		~DilationVolume() {};
 
@@ -23,7 +23,7 @@ namespace Alalba
 	
 
 	template<typename T>
-	std::shared_ptr<DilationVolume<T>> Dilation(std::shared_ptr< lux::Volume<T> > fieldPtr1,
+	std::shared_ptr<DilationVolume<T>> Dilation(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
 		const T& d)
 	{
 		return std::make_shared< DilationVolume<T> >(fieldPtr1, d);

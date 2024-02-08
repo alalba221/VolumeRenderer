@@ -9,7 +9,7 @@ namespace Alalba
 	class ScaleVolume : public lux::Volume<T>
 	{
 	public:
-		ScaleVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, const lux::Vector& scale )
+		ScaleVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const lux::Vector& scale )
 			:m_fieldPtr1(fieldPtr1), m_scale(scale) {};
 		~ScaleVolume() {};
 
@@ -31,7 +31,7 @@ namespace Alalba
 	
 
 	template<typename T>
-	std::shared_ptr<ScaleVolume<T>> Scale(std::shared_ptr< lux::Volume<T> > fieldPtr1,
+	std::shared_ptr<ScaleVolume<T>> Scale(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
 		const lux::Vector& scale)
 	{
 		return std::make_shared< ScaleVolume<T> >(fieldPtr1, scale);

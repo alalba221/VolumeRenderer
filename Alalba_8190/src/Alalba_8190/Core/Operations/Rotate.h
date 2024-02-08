@@ -7,7 +7,7 @@ namespace Alalba
 	class RotationVolume : public lux::Volume<T>
 	{
 	public:
-		RotationVolume(std::shared_ptr< lux::Volume<T> > fieldPtr, const lux::Vector& axis, const double rad) 
+		RotationVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr, const lux::Vector& axis, const double rad) 
 			:m_fieldPtr(fieldPtr), m_axis(axis), m_rad(rad) {};
 		~RotationVolume() {};
 
@@ -25,7 +25,7 @@ namespace Alalba
 	};
 
 	template<typename T>
-	std::shared_ptr< RotationVolume<T> > Rotate(std::shared_ptr< lux::Volume<T> > fieldPtr, const lux::Vector& axis, const double rad)
+	std::shared_ptr< RotationVolume<T> > Rotate(const std::shared_ptr< lux::Volume<T> >& fieldPtr, const lux::Vector& axis, const double rad)
 	{
 
 		return std::make_shared< RotationVolume<T> >(fieldPtr,axis, rad);

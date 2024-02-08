@@ -8,7 +8,7 @@ namespace Alalba
 	class MultiVolume : public lux::Volume<T1>
 	{
 	public:
-		MultiVolume(std::shared_ptr< lux::Volume<T1> > fieldPtr1, std::shared_ptr< lux::Volume<T2> > fieldPtr2)
+		MultiVolume(const std::shared_ptr< lux::Volume<T1> >& fieldPtr1, const std::shared_ptr< lux::Volume<T2> >& fieldPtr2)
 			:m_fieldPtr1(fieldPtr1), m_fieldPtr2(fieldPtr2) {};
 		~MultiVolume() {};
 
@@ -25,7 +25,7 @@ namespace Alalba
 	class MultiVolume<T1, float> : public lux::Volume<T1>
 	{
 	public:
-		MultiVolume(std::shared_ptr< lux::Volume<T1> > fieldPtr1, std::shared_ptr< lux::Volume<float> > fieldPtr2)
+		MultiVolume(const std::shared_ptr< lux::Volume<T1> >& fieldPtr1, const std::shared_ptr< lux::Volume<float> >& fieldPtr2)
 			:m_fieldPtr1(fieldPtr1), m_fieldPtr2(fieldPtr2) {};
 		~MultiVolume() {};
 
@@ -37,11 +37,9 @@ namespace Alalba
 		std::shared_ptr< lux::Volume<float> > m_fieldPtr2;
 	};
 
-
-
 	template<typename T1,typename T2>
-	std::shared_ptr<MultiVolume<T1,T2>> Multiply(std::shared_ptr< lux::Volume<T1> > fieldPtr1,
-		std::shared_ptr< lux::Volume<T2> > fieldPtr2)
+	std::shared_ptr<MultiVolume<T1,T2>> Multiply(const std::shared_ptr< lux::Volume<T1> >& fieldPtr1,
+		const std::shared_ptr< lux::Volume<T2> >& fieldPtr2)
 	{
 		return std::make_shared< MultiVolume<T1,T2> >(fieldPtr1, fieldPtr2);
 	}

@@ -8,7 +8,7 @@ namespace Alalba
 	class NegateVolume : public lux::Volume<T>
 	{
 	public:
-		NegateVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1)
+		NegateVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1)
 			:m_fieldPtr1(fieldPtr1) {};
 		~NegateVolume() {};
 
@@ -25,7 +25,7 @@ namespace Alalba
 	
 
 	template<typename T>
-	std::shared_ptr<NegateVolume<T>> Negate(std::shared_ptr< lux::Volume<T> > fieldPtr1)
+	std::shared_ptr<NegateVolume<T>> Negate(const std::shared_ptr< lux::Volume<T> >& fieldPtr1)
 	{
 		return std::make_shared< NegateVolume<T> >(fieldPtr1);
 	}

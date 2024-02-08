@@ -8,7 +8,7 @@ namespace Alalba
 	class AddVolume : public lux::Volume<T>
 	{
 	public:
-		AddVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, std::shared_ptr< lux::Volume<T> > fieldPtr2)
+		AddVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 			:m_fieldPtr1(fieldPtr1), m_fieldPtr2(fieldPtr2) {};
 		~AddVolume() {};
 
@@ -22,8 +22,8 @@ namespace Alalba
 
 	
 	template<typename T>
-	std::shared_ptr<AddVolume<T>> Add(std::shared_ptr< lux::Volume<T> > fieldPtr1,
-		std::shared_ptr< lux::Volume<T> > fieldPtr2)
+	std::shared_ptr<AddVolume<T>> Add(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
+		const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 	{
 		return std::make_shared< AddVolume<T> >(fieldPtr1, fieldPtr2);
 	}

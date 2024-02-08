@@ -9,7 +9,7 @@ namespace Alalba
 	class IntersectionVolume : public lux::Volume<T>
 	{
 	public:
-		IntersectionVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, std::shared_ptr< lux::Volume<T> > fieldPtr2)
+		IntersectionVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 			:m_fieldPtr1(fieldPtr1), m_fieldPtr2(fieldPtr2) {};
 		~IntersectionVolume() {};
 
@@ -37,8 +37,8 @@ namespace Alalba
 	
 
 	template<typename T>
-	std::shared_ptr<IntersectionVolume<T>> Intersection(std::shared_ptr< lux::Volume<T> > fieldPtr1,
-		std::shared_ptr< lux::Volume<T> > fieldPtr2)
+	std::shared_ptr<IntersectionVolume<T>> Intersection(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
+		const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 	{
 		return std::make_shared< IntersectionVolume<T> >(fieldPtr1, fieldPtr2);
 	}

@@ -7,7 +7,7 @@ namespace Alalba
 	class ClampVolume : public lux::Volume<T>
 	{
 	public:
-		ClampVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, const T& min, const T& max)
+		ClampVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const T& min, const T& max)
 			:m_fieldPtr1(fieldPtr1),m_min(min),m_max(max) {};
 		~ClampVolume() {};
 
@@ -43,7 +43,7 @@ namespace Alalba
 
 	
 	template<typename T>
-	std::shared_ptr<ClampVolume<T>> Clamp(std::shared_ptr< lux::Volume<T> > fieldPtr1, const T& min, const T& max)
+	std::shared_ptr<ClampVolume<T>> Clamp(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const T& min, const T& max)
 	{
 		return std::make_shared< ClampVolume<T> >(fieldPtr1, min,max);
 	}

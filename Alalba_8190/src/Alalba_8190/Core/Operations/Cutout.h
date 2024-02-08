@@ -9,7 +9,7 @@ namespace Alalba
 	class CutoutVolume : public lux::Volume<T>
 	{
 	public:
-		CutoutVolume(std::shared_ptr< lux::Volume<T> > fieldPtr1, std::shared_ptr< lux::Volume<T> > fieldPtr2)
+		CutoutVolume(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 			:m_fieldPtr1(fieldPtr1), m_fieldPtr2(fieldPtr2) {};
 		~CutoutVolume() {};
 
@@ -38,8 +38,8 @@ namespace Alalba
 	
 
 	template<typename T>
-	std::shared_ptr<CutoutVolume<T>> Cutout(std::shared_ptr< lux::Volume<T> > fieldPtr1,
-		std::shared_ptr< lux::Volume<T> > fieldPtr2)
+	std::shared_ptr<CutoutVolume<T>> Cutout(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
+		const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 	{
 		return std::make_shared< CutoutVolume<T> >(fieldPtr1, fieldPtr2);
 	}
