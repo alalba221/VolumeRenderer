@@ -23,7 +23,7 @@ public:
 
 		for (int i = 0; i < 120; i++)
 		{
-			ALALBA_ERROR("{0}th start", i);
+			ALALBA_INFO("{0}th start", i);
 			auto start = std::chrono::system_clock::now();
 			
 			std::string index = std::to_string(i);
@@ -107,6 +107,7 @@ public:
 		mask = Alalba::Mask<float>(bodySDF);
 		bodyColor = Alalba::Multiply<lux::Color>(redColor, mask);
 
+
 		/// 2. skirt
 		Alalba::ScalarField dressSDF;
 		Alalba::ScalarField dressDensity;
@@ -182,8 +183,8 @@ private:
 	std::shared_ptr<Alalba::Steiner> s_steiner;*/
 
 
-	ScalarField density_field;
-	ColorField color_field;
+	Alalba::ScalarField density_field;
+	Alalba::ColorField color_field;
 
 	std::unique_ptr<lux::Camera> m_camera;
 	std::unique_ptr<Alalba::Renderer> m_renderer;

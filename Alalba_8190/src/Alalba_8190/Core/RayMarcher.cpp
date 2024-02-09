@@ -31,7 +31,7 @@ namespace Alalba
 		}
 	}
 	
-	void RayMarcher::MarchSigleLight(signed int index, 
+	void RayMarcher::MarchSigleRay(signed int index,
 		const ScalarField& densityField,
 		const ColorField& colorField)
 	{
@@ -77,12 +77,9 @@ namespace Alalba
 #pragma omp parallel for
 		for (signed int pixel = 0; pixel < m_width * m_height; pixel++)
 		{
-		
-			MarchSigleLight(pixel, densityFiled, colorFiled);
-
+			MarchSigleRay(pixel, densityFiled, colorFiled);
 		}// end for
 
-		
 		ALALBA_INFO("Ray Marching Done");
 	}
 

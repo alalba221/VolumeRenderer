@@ -12,7 +12,7 @@ namespace Alalba
 		~RayMarcher() { Clean(); }
 		void Clean() { };
 		//void MarchSigleLight(const lux::Vector& np, const lux::Volume<float>& sdf);
-		void MarchSigleLight(signed int index, const ScalarField& densityField, const ColorField& colorField);
+		void MarchSigleRay(signed int index, const ScalarField& densityField, const ColorField& colorField);
 
 		void RayMarch( const ScalarField& densityFiled, const ColorField& colorFiled);
 

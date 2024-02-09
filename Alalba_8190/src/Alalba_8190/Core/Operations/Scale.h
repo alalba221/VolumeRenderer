@@ -21,7 +21,7 @@ namespace Alalba
 		lux::Vector m_scale;
 	};
 
-	// Scalar
+	// Color
 	template<>
 	virtual const float ScaleVolume<float>::eval(const lux::Vector& P) const 
 	{

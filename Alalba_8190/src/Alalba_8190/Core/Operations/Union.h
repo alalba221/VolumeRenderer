@@ -22,7 +22,6 @@ namespace Alalba
 	};
 	
 	/// Scalar
-
 	template<>
 	virtual const float UnionVolume<float>::eval(const lux::Vector& P) const override
 	{
@@ -38,7 +37,7 @@ namespace Alalba
 		lux::Color color1 = m_fieldPtr1->eval(P);
 		lux::Color color2 = m_fieldPtr2->eval(P);
 		
-		if (color1 != Black && color1 != Black)
+		if (color1 != Black && color2 != Black)
 		{
 			return color1 *0.5 + color2 *0.5;
 		}
@@ -47,10 +46,9 @@ namespace Alalba
 	};
 
 	template<typename T>
-	std::shared_ptr<UnionVolume<T>> Union(std::shared_ptr< lux::Volume<T> > fieldPtr1,
-		std::shared_ptr< lux::Volume<T> > fieldPtr2)
+	std::shared_ptr<UnionVolume<T>> Union(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
+		const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 	{
-	
 		return std::make_shared< UnionVolume<T> >(fieldPtr1, fieldPtr2);
 	}
 }

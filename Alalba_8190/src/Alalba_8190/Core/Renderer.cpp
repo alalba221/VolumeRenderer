@@ -79,7 +79,7 @@ namespace Alalba
       fprintf(stderr, "Save EXR err: %s\n", err);
       return ret;
     }
-    printf("Saved exr file. [ %s ] \n", outfilename);
+    ALALBA_TRACE("Saved exr file. {0}", outfilename);
 
     free(image.pixel_types);
     free(image.requested_pixel_types);
