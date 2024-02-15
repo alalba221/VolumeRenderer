@@ -4,6 +4,9 @@
 
 namespace Alalba
 {
+
+	
+
 	struct INT3
 	{
 		INT3(int x, int y, int z) 
@@ -19,23 +22,8 @@ namespace Alalba
 	class SparseGrid
 	{
 	public:
-		SparseGrid(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution , int partionSize )
-		:LLFC(llc),RURC(ruc), m_resolution(resolution),m_partionSize(partionSize) 
-		{
-			m_blockDimension = INT3(resolution.i/ partionSize, resolution.j / partionSize, resolution.k / partionSize);
+		SparseGrid(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize);
 
-			m_data = new T* [m_blockDimension.i * m_blockDimension.j * m_blockDimension.k];
-			for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)
-			{
-				m_data[i] = nullptr;
-			}
-
-			lux::Vector dim = RURC - LLFC;
-			dim.abs();
-			m_precision = lux::Vector(dim.X() / m_resolution.i, dim.Y() / m_resolution.j, dim.Z() / m_resolution.k);
-			
-		};
-		
 		~SparseGrid() 
 		{
 			for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)
@@ -83,12 +71,10 @@ namespace Alalba
 		T** m_data;
 	};
 
+
 	typedef std::shared_ptr<SparseGrid<float>> ScalarSparseGrid;
 	typedef std::shared_ptr < SparseGrid<lux::Color>> ColorSparseGrid;
-
-
-
-
+	
 	/// SparseGridVolume
 	template<typename T>
 	class SparseGridVolume : public lux::Volume<T>
@@ -99,7 +85,7 @@ namespace Alalba
 			:LLFC(llc), RURC(ruc), m_resolution(resolution), m_partionSize(partionSize), m_fieldPtr(fieldPtr)
 		{
 			sparseGridPtr = std::make_shared<SparseGrid<T>>(LLFC, RURC, m_resolution, m_partionSize);
-			sparseGridPtr->StampGrid(m_fieldPtr);
+			//sparseGridPtr->StampGrid(m_fieldPtr);
 		};
 		~SparseGridVolume() {};
 
@@ -121,16 +107,15 @@ namespace Alalba
 
 	};
 
-
 	template<typename T>
 	std::shared_ptr<SparseGridVolume<T>> Grid(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize,
-		std::shared_ptr< lux::Volume<T> > fieldPtr)
+		const std::shared_ptr< lux::Volume<T> >& fieldPtr)
 	{
 
-		return std::make_shared< SparseGridVolume<T> >(llc,ruc, resolution, partionSize, fieldPtr);
-		/*grid->Grid()->StampGrid(fieldPtr);
+		std::shared_ptr<SparseGridVolume<T>> grid = std::make_shared< SparseGridVolume<T> >(llc,ruc, resolution, partionSize, fieldPtr);
+		grid->Grid()->StampGrid(fieldPtr);
 
-		return grid;*/
+		return grid;
 	}
 
 }

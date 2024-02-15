@@ -1,8 +1,27 @@
 #pragma once
-#include "Grid.h"
+#include "SparseGrid.h"
 #include "omp.h"
 namespace Alalba
 {
+	template <class T>
+	SparseGrid<T>::SparseGrid(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize)
+		:LLFC(llc), RURC(ruc), m_resolution(resolution), m_partionSize(partionSize)
+	{
+		m_blockDimension = INT3(resolution.i / partionSize, resolution.j / partionSize, resolution.k / partionSize);
+
+		m_data = new T * [m_blockDimension.i * m_blockDimension.j * m_blockDimension.k];
+		for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)
+		{
+			m_data[i] = nullptr;
+		}
+
+		lux::Vector difference = RURC - LLFC;
+		lux::Vector distance = difference.abs();
+		m_precision = lux::Vector(distance.X() / m_resolution.i, distance.Y() / m_resolution.j, distance.Z() / m_resolution.k);
+
+	};
+
+
 	template <class T>
 	void SparseGrid<T>::Set(INT3 index3d, const T& value)
 	{
@@ -113,9 +132,9 @@ namespace Alalba
 		if(!isInside(P))
 			return { -1,-1,-1 };
 
-		lux::Vector distancetoLLC = (P - LLFC);
+		lux::Vector difference = (P - LLFC);
 		
-		distancetoLLC.abs();
+		lux::Vector distancetoLLC = difference.abs();
 
 		int i = distancetoLLC.X() / m_precision.X();
 		int j = distancetoLLC.Y() / m_precision.Y();
@@ -167,8 +186,8 @@ namespace Alalba
 		//ALALBA_ERROR("{0},{1},{2}", i, j, k);
 
 		// weight
-		lux::Vector distancetoLLC = P - LLFC;
-		distancetoLLC.abs();
+		lux::Vector difference = P - LLFC;
+		lux::Vector distancetoLLC = difference.abs();
 		lux::Vector weight = lux::Vector(distancetoLLC.X() / m_precision.X() - closet_llc.i,
 			distancetoLLC.Y() / m_precision.Y() - closet_llc.j,
 			distancetoLLC.Z() / m_precision.Z() - closet_llc.k);

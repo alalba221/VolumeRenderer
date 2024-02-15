@@ -18,4 +18,4 @@
 //#include "Alalba_8190/Core/Transform/Transform.h"
 #include "Alalba_8190/Core/Operations/Operations.h"
 
-#include "Alalba_8190/Core/Grid/Grid.inl"
+#include "Alalba_8190/Core/Grid/SparseGrid.inl"
