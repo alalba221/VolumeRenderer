@@ -24,6 +24,7 @@ public:
 		for (int i = 0; i < 120; i++)
 		{
 			ALALBA_INFO("{0}th start", i);
+
 			auto start = std::chrono::system_clock::now();
 			
 			std::string index = std::to_string(i);
@@ -40,7 +41,8 @@ public:
 			lux::Vector view = lux::Vector(0.0, 0.0, 0.0) - eye;
 			m_camera->setEyeViewUp(eye, view, lux::Vector(0, 1, 0));
 
-			m_renderer->Render(*m_camera.get(), density_field,color_field);
+			//m_renderer->Render(*m_camera.get(), density_field,color_field);
+			m_renderer->Render(*m_camera.get(), density_grid, color_grid);
 			m_renderer->SaveImage(output.c_str());
 
 
@@ -91,7 +93,7 @@ public:
 		
 		headDensity = Alalba::Clamp<float>(headSDF, 0.0f, 1.0f);
 		
-		ScalarField mask = Alalba::Mask<float>(headSDF);
+		Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
 		headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
 
 		/// 1. body
@@ -158,7 +160,20 @@ public:
 		color_field = Alalba::Union<lux::Color>(headColor, bodyColor);
 		color_field = Alalba::Union<lux::Color>(color_field, dressColor);
 		color_field = Alalba::Union<lux::Color>(color_field, braceletColor);
+
+		ALALBA_INFO("Grid Density Field");
+		auto start = std::chrono::system_clock::now();
+		density_grid = Alalba::Grid<float>(lux::Vector(-2.0, -2.0, 2.0), lux::Vector(2.0, 2.0, -2.0), { 512,512,512 }, 4, density_field);
+		auto end = std::chrono::system_clock::now();
+		double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		ALALBA_ERROR("Grid Density Field Done {0}s", elapsed);
 		
+		ALALBA_INFO("Grid Color Field");
+		start = std::chrono::system_clock::now();
+		color_grid = Alalba::Grid<lux::Color>(lux::Vector(-2.0, -2.0, 2.0), lux::Vector(2.0, 2.0, -2.0), { 512,512,512 }, 4, color_field);
+		end = std::chrono::system_clock::now();
+		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		ALALBA_ERROR("Grid Color Field Done {0}s", elapsed);
 	}
 
 	virtual void OnShutdown() override
@@ -170,19 +185,9 @@ public:
 
 private:
 
-
-
-	// primitives
-	/*std::shared_ptr<Alalba::Sphere> s_sphere2;
-	std::shared_ptr<Alalba::Sphere> s_sphere;
-	std::shared_ptr<Alalba::Ellipse> s_ellipse;
-	std::shared_ptr<Alalba::Box> s_box;
-	std::shared_ptr<Alalba::Torus> s_torus;
-	std::shared_ptr<Alalba::Cone> s_cone;
-	std::shared_ptr<Alalba::Icosahedron> s_icosahedron;
-	std::shared_ptr<Alalba::Steiner> s_steiner;*/
-
-
+	Alalba::ScalarField density_grid;
+	Alalba::ColorField color_grid;
+	
 	Alalba::ScalarField density_field;
 	Alalba::ColorField color_field;
 

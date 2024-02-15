@@ -126,6 +126,14 @@ class Vector
    void normalize() 
    { double mag = magnitude(); xyz[0] /= mag; xyz[1] /= mag; xyz[2] /= mag; }
 
+   const Vector& abs()
+   {
+     xyz[0] = std::abs(xyz[0]);
+     xyz[1] = std::abs(xyz[1]);
+     xyz[2] = std::abs(xyz[2]);
+     return *this;
+   }
+
 //  Comparisons
 
    const bool operator==         (const Vector& v) const

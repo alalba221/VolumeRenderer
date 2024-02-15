@@ -16,6 +16,7 @@ project "Alalba_8190"
 	files
 	{
 		"src/**.h",
+		"src/**.inl",
 		"src/**.cpp",
 	}
 

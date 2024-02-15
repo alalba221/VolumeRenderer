@@ -1,4 +1,4 @@
-#include "Union.h"
+#include "Union.inl"
 #include "Intersection.h"
 #include "Translate.h"
 #include "Cutout.h"

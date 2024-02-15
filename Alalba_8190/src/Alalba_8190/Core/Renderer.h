@@ -2,7 +2,7 @@
 #include "Camera.h"
 #include "Volume.h"
 #include "RayMarcher.h"
-#include "Alalba_8190/Core/SDFs/Object.h"
+
 
 namespace Alalba 
 {

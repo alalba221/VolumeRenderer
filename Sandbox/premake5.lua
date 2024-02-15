@@ -7,7 +7,7 @@ project "Sandbox"
 	staticruntime "on"
    openmp "On"
     --staticruntime "off"
-	files { "src/**.h", "src/**.cpp" }
+	files { "src/**.h", "src/**.inl","src/**.cpp" }
 
    includedirs
    {

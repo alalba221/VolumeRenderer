@@ -50,6 +50,10 @@ namespace Alalba
 		{
 			
 			float desity = densityField->eval(m_Positions[index]);
+			//if (desity != 0)
+			//{
+			//	ALALBA_ERROR("DEN {0}", desity);
+			//}
 			double deltaT = 0.0;
 
 			if (desity >= 0)
