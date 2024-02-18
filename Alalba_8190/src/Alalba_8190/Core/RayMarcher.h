@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 #include "Volume.h"
-#include "SDFs/Fields.h"
+#include "ImplicitFunction/Fields.h"
 namespace Alalba
 {
 	class RayMarcher

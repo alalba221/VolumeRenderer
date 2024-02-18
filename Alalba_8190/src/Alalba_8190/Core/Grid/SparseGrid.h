@@ -22,8 +22,10 @@ namespace Alalba
 	class SparseGrid
 	{
 	public:
-		SparseGrid(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize);
-
+		//SparseGrid(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize);
+		
+		SparseGrid(const lux::Vector& center, const lux::Vector& dimension, INT3 resolution, int partionSize);
+		
 		~SparseGrid() 
 		{
 			for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)
@@ -37,6 +39,7 @@ namespace Alalba
 		void Set(INT3 index3d, const T& value);
 		
 		const T& Get(int i,int j, int k) const;
+		const T& Get(INT3 index3d) const;
 
 		void StampGrid(std::shared_ptr< lux::Volume<T> > fieldptr);
 
@@ -49,10 +52,35 @@ namespace Alalba
 		bool isInside(const lux::Vector& P) const;
 		bool isInside(int i, int j, int k) const;
 
+		T** data() { return m_data; }
+	
+		const std::vector<int> assignedBolcks() 
+		{ 
+			std::vector<int> Index;
+			for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)
+			{
+				if (m_data[i] != nullptr)
+					Index.push_back(i);
+			}
+
+			return Index;
+
+		}
+		int blocksize() {  return m_partionSize * m_partionSize * m_partionSize;}
+		int fullblocks() {
+			return m_blockDimension.i * m_blockDimension.j * m_blockDimension.k
+				;
+		}
+		
 	private:
 
-		lux::Vector LLFC;
-		lux::Vector RURC;
+		lux::Vector m_center;
+		lux::Vector m_dimension;
+
+		lux::Vector LLRC;
+		lux::Vector RUFC;
+
+		
 
 		// how many cells along each axis
 		INT3 m_resolution;
@@ -69,6 +97,7 @@ namespace Alalba
 		T m_defaultValue = T();
 
 		T** m_data;
+
 	};
 
 
@@ -80,9 +109,8 @@ namespace Alalba
 	class SparseGridVolume : public lux::Volume<T>
 	{
 	public:
-		SparseGridVolume(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize, 
-			std::shared_ptr< lux::Volume<T> > fieldPtr)
-			:LLFC(llc), RURC(ruc), m_resolution(resolution), m_partionSize(partionSize), m_fieldPtr(fieldPtr)
+		SparseGridVolume(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize)
+			:LLFC(llc), RURC(ruc), m_resolution(resolution), m_partionSize(partionSize)
 		{
 			sparseGridPtr = std::make_shared<SparseGrid<T>>(LLFC, RURC, m_resolution, m_partionSize);
 			//sparseGridPtr->StampGrid(m_fieldPtr);
@@ -108,11 +136,11 @@ namespace Alalba
 	};
 
 	template<typename T>
-	std::shared_ptr<SparseGridVolume<T>> Grid(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize,
+	std::shared_ptr<SparseGridVolume<T>> Grid(const lux::Vector& center, const lux::Vector& dimesion, INT3 resolution, int partionSize,
 		const std::shared_ptr< lux::Volume<T> >& fieldPtr)
 	{
 
-		std::shared_ptr<SparseGridVolume<T>> grid = std::make_shared< SparseGridVolume<T> >(llc,ruc, resolution, partionSize, fieldPtr);
+		std::shared_ptr<SparseGridVolume<T>> grid = std::make_shared< SparseGridVolume<T> >(center, dimesion, resolution, partionSize);
 		grid->Grid()->StampGrid(fieldPtr);
 
 		return grid;

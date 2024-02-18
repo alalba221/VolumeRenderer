@@ -9,8 +9,8 @@
 #include "Alalba_8190/EntryPoint.h"
 
 // Api
-#include "Alalba_8190/Core/SDFs/Fields.h"
-#include "Alalba_8190/Core/SDFs/Shapes.h"
+#include "Alalba_8190/Core/ImplicitFunction/Fields.h"
+#include "Alalba_8190/Core/ImplicitFunction/Shapes.h"
 
 #include "Camera.h"
 #include "Alalba_8190/Core/Renderer.h"
@@ -19,3 +19,6 @@
 #include "Alalba_8190/Core/Operations/Operations.h"
 
 #include "Alalba_8190/Core/Grid/SparseGrid.inl"
+
+#include "Alalba_8190/Core/Mesh/Mesh.h"
+#include "Alalba_8190/Core/Mesh/LevelSet.h"

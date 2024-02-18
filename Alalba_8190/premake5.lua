@@ -34,6 +34,7 @@ project "Alalba_8190"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.tinyexr}",
 		"%{IncludeDir.startup}",
+		"%{IncludeDir.tinyobj}",
 		
 	}
 
