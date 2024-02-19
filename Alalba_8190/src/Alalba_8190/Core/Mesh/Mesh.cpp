@@ -27,6 +27,7 @@ namespace Alalba
       minx = (x < minx) ? x : minx;
       miny = (y < miny) ? y : miny;
       minz = (z < minz) ? z : minz;
+
       maxx = (x > maxx) ? x : maxx;
       maxy = (y > maxy) ? y : maxy;
       maxz = (z > maxz) ? z : maxz;
@@ -37,11 +38,13 @@ namespace Alalba
     }
     int totalvertex = vertices.size();
 
-    LLFC = lux::Vector(minx, miny, maxz);
-    RURC = lux::Vector(maxx, maxy, minz);
-
     center = lux::Vector(sumx, sumy, sumz);
     center /= totalvertex;
+
+    LLRC = lux::Vector(minx, miny, minz);
+    RUFC = lux::Vector(maxx, maxy, maxz);
+
+    
 
     dimension = lux::Vector(maxx - minx, maxy - miny, maxz - minz);
   }

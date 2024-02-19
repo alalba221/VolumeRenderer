@@ -72,8 +72,8 @@ namespace Alalba
 				;
 		}
 		
-	private:
-
+	//private:
+	public:
 		lux::Vector m_center;
 		lux::Vector m_dimension;
 
@@ -82,10 +82,10 @@ namespace Alalba
 
 		
 
-		// how many cells along each axis
+		// how many points along each axis
 		INT3 m_resolution;
 
-		// how many cells in the block along each axis
+		// how many points in the block along each axis
 		int m_partionSize;
 
 		// how many blocks along each axis
@@ -109,10 +109,10 @@ namespace Alalba
 	class SparseGridVolume : public lux::Volume<T>
 	{
 	public:
-		SparseGridVolume(const lux::Vector& llc, const lux::Vector& ruc, INT3 resolution, int partionSize)
-			:LLFC(llc), RURC(ruc), m_resolution(resolution), m_partionSize(partionSize)
+		SparseGridVolume(const lux::Vector& center, const lux::Vector& dimesion, INT3 resolution, int partionSize)
+			:center(center), dimesion(dimesion), m_resolution(resolution), m_partionSize(partionSize)
 		{
-			sparseGridPtr = std::make_shared<SparseGrid<T>>(LLFC, RURC, m_resolution, m_partionSize);
+			sparseGridPtr = std::make_shared<SparseGrid<T>>(center, dimesion, m_resolution, m_partionSize);
 			//sparseGridPtr->StampGrid(m_fieldPtr);
 		};
 		~SparseGridVolume() {};
@@ -124,8 +124,8 @@ namespace Alalba
 
 	private:
 
-		lux::Vector LLFC;
-		lux::Vector RURC;
+		lux::Vector center;
+		lux::Vector dimesion;
 
 		INT3 m_resolution;
 		int m_partionSize;

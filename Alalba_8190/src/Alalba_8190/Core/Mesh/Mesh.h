@@ -25,13 +25,14 @@ namespace Alalba
 
 		const std::vector<Triangle>& Triangles() const { return m_triangles; }
 
-		lux::Vector LLFC;
-		lux::Vector RURC;
+		lux::Vector LLRC;
+		lux::Vector RUFC;
 		lux::Vector center;
 		lux::Vector dimension;
 
 	private:
 		void ReadOBJ(std::string filepath, std::vector<lux::Vector>& vertices, std::vector<int>& indices);
+	public:
 		std::vector<Triangle> m_triangles;
 
 	};

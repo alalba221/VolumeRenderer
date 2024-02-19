@@ -36,14 +36,15 @@ public:
 
 			
 			lux::Matrix camRotateMatrix;
+			//camRotateMatrix = lux::rotation(lux::Vector(1.0, 0.0, 0.0), step);
 			camRotateMatrix = lux::rotation(lux::Vector(0.0, 1.0, 0.0), step);
 			lux::Vector eye = camRotateMatrix * m_camera->eye();
 			lux::Vector view = lux::Vector(0.0, 0.0, 0.0) - eye;
 			m_camera->setEyeViewUp(eye, view, lux::Vector(0, 1, 0));
 
 	
-			m_renderer->Render(*m_camera.get(), density_grid, color_grid);
-			//m_renderer->Render(*m_camera.get(), scaled_bunny_grid, bunny_color_grid);
+			//m_renderer->Render(*m_camera.get(), density_grid, color_grid);
+			m_renderer->Render(*m_camera.get(), bunny_grid, bunny_color_grid);
 			m_renderer->SaveImage(output.c_str());
 
 
@@ -153,42 +154,46 @@ public:
 		/// </summary>
 		
 
-		density_field = Alalba::Union<float>(headDensity, bodyDensity);
-		density_field = Alalba::Union<float>(density_field, dressDensity);
-		density_field = Alalba::Union<float>(density_field, braceletDensity);
+		//density_field = Alalba::Union<float>(headDensity, bodyDensity);
+		//density_field = Alalba::Union<float>(density_field, dressDensity);
+		//density_field = Alalba::Union<float>(density_field, braceletDensity);
 
 
-		color_field = Alalba::Union<lux::Color>(headColor, bodyColor);
-		color_field = Alalba::Union<lux::Color>(color_field, dressColor);
-		color_field = Alalba::Union<lux::Color>(color_field, braceletColor);
+		//color_field = Alalba::Union<lux::Color>(headColor, bodyColor);
+		//color_field = Alalba::Union<lux::Color>(color_field, dressColor);
+		//color_field = Alalba::Union<lux::Color>(color_field, braceletColor);
 
-		ALALBA_INFO("Grid Density Field");
-		auto start = std::chrono::system_clock::now();
-		density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 64,64,64 }, 4, density_field);
-		auto end = std::chrono::system_clock::now();
-		double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_ERROR("Grid Density Field Done {0}s", elapsed);
-		
-		ALALBA_INFO("Grid Color Field");
-		start = std::chrono::system_clock::now();
-		color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 64,64,64 }, 4, color_field);
-		end = std::chrono::system_clock::now();
-		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_ERROR("Grid Color Field Done {0}s", elapsed);
+		//ALALBA_INFO("Grid Density Field");
+		//auto start = std::chrono::system_clock::now();
+		//density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, density_field);
+		//auto end = std::chrono::system_clock::now();
+		//double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		//ALALBA_ERROR("Grid Density Field Done {0}s", elapsed);
+		//
+		//ALALBA_INFO("Grid Color Field");
+		//start = std::chrono::system_clock::now();
+		//color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, color_field);
+		//end = std::chrono::system_clock::now();
+		//elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		//ALALBA_ERROR("Grid Color Field Done {0}s", elapsed);
 
 
 
 		//// mesh 
-		//Alalba::Mesh bunny = Alalba::Mesh("model/bunny.obj");
-		//ALALBA_ERROR("Dim:{0},Center:{1}", bunny.dimension, bunny.center);
+		Alalba::Mesh bunny = Alalba::Mesh("model/bunny.obj");
+		ALALBA_ERROR("Dim:{0},Center:{1}", bunny.dimension, bunny.center);
 
-		//bunny_grid = Alalba::LevelSet(bunny, { 512,512,512 }, 4, 5);
-		//scaled_bunny_grid = Alalba::Scale<float>(bunny_grid, lux::Vector(10, 10, 10));
+		ALALBA_INFO(bunny.m_triangles.size());
+		ALALBA_INFO("OBJ Dimension:{0}", bunny.dimension);
+		
+		Alalba::ScalarField original_banny= Alalba::LevelSet(bunny, { 1024,1024,1024 }, 8, 2);
+		
+		bunny_grid = Alalba::Scale<float>(original_banny, lux::Vector(10.1, 10.1, 10.1));
 
-		//mask = Alalba::Mask<float>(scaled_bunny_grid);
+		mask = Alalba::Mask<float>(bunny_grid);
 
-		////bunny_color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 128,128,128 }, 4, greenColor);
-		//bunny_color_grid = Alalba::Multiply<lux::Color>(greenColor, mask);
+		//bunny_color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 128,128,128 }, 4, greenColor);
+		bunny_color_grid = Alalba::Multiply<lux::Color>(greenColor, mask);
 
 
 	}
