@@ -5,18 +5,28 @@
 namespace Alalba
 {
 
-	
-
 	struct INT3
 	{
 		INT3(int x, int y, int z) 
 		:i(x),j(y),k(z) {}
 		INT3():i(0), j(0), k(0) {}
+
+		std::string ToString() const
+		{
+			std::stringstream ss;
+			ss << "INT3: " << i << ", " << j << ", " << k;
+			return ss.str();
+		}
+
 		int i;
 		int j;
 		int k;
 	};
 
+	inline std::ostream& operator<<(std::ostream& os, const INT3& e)
+	{
+		return os << e.ToString();
+	}
 
 	template<class T>
 	class SparseGrid
@@ -28,13 +38,21 @@ namespace Alalba
 		
 		~SparseGrid() 
 		{
-			for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)
-			{
-				if (m_data[i] != nullptr)
-					delete[] m_data[i];
-			}
-			delete[] m_data;
+			CleanData();
 		};
+
+		void CleanData()
+		{
+			if (m_data != nullptr)
+			{
+				for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)
+				{
+					if (m_data[i] != nullptr)
+						delete[] m_data[i];
+				}
+				delete[] m_data;
+			}
+		}
 
 		void Set(INT3 index3d, const T& value);
 		
@@ -123,7 +141,6 @@ namespace Alalba
 		std::shared_ptr < SparseGrid<T> > Grid() { return sparseGridPtr; }
 
 	private:
-
 		lux::Vector center;
 		lux::Vector dimesion;
 

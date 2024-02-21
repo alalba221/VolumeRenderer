@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Mesh.h"
+#include "tiny_obj_loader.h"
 namespace Alalba
 {
 
@@ -38,49 +39,62 @@ namespace Alalba
     }
     int totalvertex = vertices.size();
 
-    center = lux::Vector(sumx, sumy, sumz);
-    center /= totalvertex;
+    
 
     LLRC = lux::Vector(minx, miny, minz);
     RUFC = lux::Vector(maxx, maxy, maxz);
 
-    
-
+    center = (LLRC + RUFC) / 2;
     dimension = lux::Vector(maxx - minx, maxy - miny, maxz - minz);
   }
-
   void Mesh::ReadOBJ(std::string filepath, std::vector<lux::Vector>& vertices, std::vector<int>& indices)
-	{
-    // 打开文件流
-    std::ifstream fin(filepath);
-    std::string line;
-    if (!fin.is_open()) {
-      std::cout << "File " << filepath << " Open failed" << std::endl;
-      exit(-1);
+  {
+    tinyobj::ObjReaderConfig reader_config;
+    reader_config.triangulate = true;
+    tinyobj::ObjReader reader;
+
+    if (!reader.ParseFromFile(filepath, reader_config))
+    {
+      if (!reader.Error().empty())
+      {
+        std::cerr << "TinyObjReader: " << reader.Error();
+      }
+      exit(1);
+    }
+    if (!reader.Warning().empty())
+    {
+      std::cout << "TinyObjReader: " << reader.Warning();
     }
 
-    // 增量读取
-    int offset = vertices.size();
+    auto& attrib = reader.GetAttrib();
+    auto& shapes = reader.GetShapes();
+    auto& materials = reader.GetMaterials();
 
-    // 按行读取
-    while (std::getline(fin, line)) {
-      std::istringstream sin(line);   // 以一行的数据作为 string stream 解析并且读取
-      std::string type;
-      double x, y, z;
-      int v0, v1, v2;
+    for (size_t i = 0; i < attrib.vertices.size(); i += 3)
+    {
+      tinyobj::real_t vx = attrib.vertices[i + 0];
+      tinyobj::real_t vy = attrib.vertices[i + 1];
+      tinyobj::real_t vz = attrib.vertices[i + 2];
+      lux::Vector v = lux::Vector(vx, vy, vz);
+      vertices.push_back(v);
+    }
 
-      // 读取obj文件
-      sin >> type;
-      if (type == "v") {
-        sin >> x >> y >> z;
-        vertices.push_back(lux::Vector(x, y, z));
-      }
-      if (type == "f") {
-        sin >> v0 >> v1 >> v2;
-        indices.push_back(v0 - 1 + offset);
-        indices.push_back(v1 - 1 + offset);
-        indices.push_back(v2 - 1 + offset);
+    for (size_t s = 0; s < shapes.size(); s++)
+    {
+      // Loop over faces(polygon)
+      size_t index_offset = 0;
+      for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+      {
+        size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
+        int i0 = shapes[s].mesh.indices[index_offset + 0].vertex_index;
+        int i1 = shapes[s].mesh.indices[index_offset + 1].vertex_index;
+        int i2 = shapes[s].mesh.indices[index_offset + 2].vertex_index;
+        indices.push_back(i0);
+        indices.push_back(i1);
+        indices.push_back(i2);
+        index_offset += fv;
       }
     }
-	}
+
+  }
 }

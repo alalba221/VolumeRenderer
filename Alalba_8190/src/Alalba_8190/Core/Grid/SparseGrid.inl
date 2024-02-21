@@ -12,7 +12,6 @@ namespace Alalba
 		m_blockDimension = INT3(resolution.i / partionSize + 1, resolution.j / partionSize + 1, resolution.k / partionSize + 1);
 
 		LLRC = lux::Vector(m_center.X() - m_dimension.X() / 2, m_center.Y() - m_dimension.Y() / 2, m_center.Z() - m_dimension.Z() / 2);
-		//ALALBA_ERROR("Sprase Grid LLRC {0}", LLRC);
 		RUFC = lux::Vector(m_center.X() + m_dimension.X() / 2, m_center.Y() + m_dimension.Y() / 2, m_center.Z() + m_dimension.Z() / 2);
 
 		m_data = new T * [m_blockDimension.i * m_blockDimension.j * m_blockDimension.k];

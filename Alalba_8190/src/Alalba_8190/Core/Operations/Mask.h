@@ -30,7 +30,6 @@ namespace Alalba
 	template<typename T>
 	std::shared_ptr<MaskVolume<T>> Mask(const std::shared_ptr< lux::Volume<T> >& fieldPtr1)
 	{
-		ALALBA_INFO("MASK VOLUME");
 		return std::make_shared< MaskVolume<T> >(fieldPtr1);
 	}
 }

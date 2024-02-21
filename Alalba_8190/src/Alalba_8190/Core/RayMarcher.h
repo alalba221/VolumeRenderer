@@ -8,7 +8,7 @@ namespace Alalba
 	class RayMarcher
 	{
 	public:
-		RayMarcher(const lux::Camera& camera, signed int width, signed int height, double deltaS = 0.1, double K = 2.0, double minT=0.0);
+		RayMarcher(const lux::Camera& camera, signed int width, signed int height, double deltaS = 0.01, double K = 2.0, double minT=0.0);
 		~RayMarcher() { Clean(); }
 		void Clean() { };
 		//void MarchSigleLight(const lux::Vector& np, const lux::Volume<float>& sdf);

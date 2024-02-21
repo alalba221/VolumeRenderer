@@ -25,7 +25,7 @@ namespace Alalba
 
 	//};
 
-	std::shared_ptr<SparseGridVolume<float>> LevelSet(const Mesh& mesh, INT3 resolution, int partionSize,int bandwidth=3);
+	std::shared_ptr<SparseGridVolume<float>> LevelSet(const Mesh& mesh, lux::Vector griddimesion, INT3 resolution, int partionSize,int bandwidth=3);
 }
 
 

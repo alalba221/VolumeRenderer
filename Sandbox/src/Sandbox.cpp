@@ -154,48 +154,60 @@ public:
 		/// </summary>
 		
 
-		//density_field = Alalba::Union<float>(headDensity, bodyDensity);
-		//density_field = Alalba::Union<float>(density_field, dressDensity);
-		//density_field = Alalba::Union<float>(density_field, braceletDensity);
+		density_field = Alalba::Union<float>(headDensity, bodyDensity);
+		density_field = Alalba::Union<float>(density_field, dressDensity);
+		density_field = Alalba::Union<float>(density_field, braceletDensity);
 
 
-		//color_field = Alalba::Union<lux::Color>(headColor, bodyColor);
-		//color_field = Alalba::Union<lux::Color>(color_field, dressColor);
-		//color_field = Alalba::Union<lux::Color>(color_field, braceletColor);
+		color_field = Alalba::Union<lux::Color>(headColor, bodyColor);
+		color_field = Alalba::Union<lux::Color>(color_field, dressColor);
+		color_field = Alalba::Union<lux::Color>(color_field, braceletColor);
 
-		//ALALBA_INFO("Grid Density Field");
-		//auto start = std::chrono::system_clock::now();
-		//density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, density_field);
-		//auto end = std::chrono::system_clock::now();
-		//double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		//ALALBA_ERROR("Grid Density Field Done {0}s", elapsed);
-		//
-		//ALALBA_INFO("Grid Color Field");
-		//start = std::chrono::system_clock::now();
-		//color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, color_field);
-		//end = std::chrono::system_clock::now();
-		//elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		//ALALBA_ERROR("Grid Color Field Done {0}s", elapsed);
+		ALALBA_INFO("Grid Density Field");
+		auto start = std::chrono::system_clock::now();
+		density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, density_field);
+		auto end = std::chrono::system_clock::now();
+		double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		ALALBA_ERROR("Grid Density Field Done {0}s", elapsed);
+		
+		ALALBA_INFO("Grid Color Field");
+		start = std::chrono::system_clock::now();
+		color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, color_field);
+		end = std::chrono::system_clock::now();
+		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		ALALBA_ERROR("Grid Color Field Done {0}s", elapsed);
 
 
 
 		//// mesh 
-		Alalba::Mesh bunny = Alalba::Mesh("model/bunny.obj");
-		ALALBA_ERROR("Dim:{0},Center:{1}", bunny.dimension, bunny.center);
-
+		//Alalba::Mesh bunny = Alalba::Mesh("model/bunny.obj");
+		Alalba::Mesh bunny = Alalba::Mesh("model/smallajax.obj");
+		
 		ALALBA_INFO(bunny.m_triangles.size());
 		ALALBA_INFO("OBJ Dimension:{0}", bunny.dimension);
-		
-		Alalba::ScalarField original_banny= Alalba::LevelSet(bunny, { 1024,1024,1024 }, 8, 2);
-		
-		bunny_grid = Alalba::Scale<float>(original_banny, lux::Vector(10.1, 10.1, 10.1));
+		ALALBA_INFO("OBJ Center:{0}", bunny.center);
 
+		ALALBA_INFO("Level Set Bunny");
+		start = std::chrono::system_clock::now();
+
+		ALALBA_TRACE("DIM SAND {0}", bunny.dimension);
+		std::shared_ptr<Alalba::SparseGridVolume<float>> original_banny= Alalba::LevelSet(bunny, bunny.dimension*2, { 1024,1024,1024 }, 8 , 4);
+		ALALBA_ERROR("Bunny grid dim {0}", original_banny->Grid()->m_dimension);
+		end = std::chrono::system_clock::now();
+		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+		ALALBA_ERROR("Level Set Bunny Done {0}s", elapsed);
+
+
+		bunny_grid = Alalba::Translate<float>(original_banny, lux::Vector(1, 5, 1));
+		bunny_grid = Alalba::Scale<float>(original_banny, lux::Vector(0.05, 0.05, 0.05));;
+		
 		mask = Alalba::Mask<float>(bunny_grid);
 
 		//bunny_color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 128,128,128 }, 4, greenColor);
 		bunny_color_grid = Alalba::Multiply<lux::Color>(greenColor, mask);
 
-
+		//density_grid = Alalba::Union<float>(density_grid, bunny_grid);
+		//color_grid = Alalba::Union<lux::Color>(color_grid, bunny_color_grid);
 	}
 
 	virtual void OnShutdown() override
