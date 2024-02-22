@@ -157,9 +157,7 @@ namespace Alalba
 		int i = distancetoLLC.X() / m_precision.X();
 		int j = distancetoLLC.Y() / m_precision.Y();
 		int k = distancetoLLC.Z() / m_precision.Z();
-		//ALALBA_ERROR("I {0}", i);
-		//ALALBA_ERROR("J {0}", j);
-		//ALALBA_ERROR("K {0}", k);
+
 
 		if(isInside(i,j,k))
 			return { i, j, k };

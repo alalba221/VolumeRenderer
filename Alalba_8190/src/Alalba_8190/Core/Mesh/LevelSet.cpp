@@ -61,8 +61,6 @@ namespace Alalba
 		
 
 		std::shared_ptr<SparseGridVolume<float>> grid
-			 //= std::make_shared< SparseGridVolume<float> >(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), resolution, partionSize);
-		//= std::make_shared< SparseGridVolume<float> >(mesh.center, lux::Vector(4.0, 4.0, 4.0), resolution, partionSize);
 		= std::make_shared< SparseGridVolume<float> >(mesh.center, griddimesion, resolution, partionSize);
 
 		lux::Vector llc = grid->Grid()->LLRC;

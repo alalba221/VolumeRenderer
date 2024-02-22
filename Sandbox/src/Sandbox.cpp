@@ -36,7 +36,7 @@ public:
 
 			
 			lux::Matrix camRotateMatrix;
-			//camRotateMatrix = lux::rotation(lux::Vector(1.0, 0.0, 0.0), step);
+		
 			camRotateMatrix = lux::rotation(lux::Vector(0.0, 1.0, 0.0), step);
 			lux::Vector eye = camRotateMatrix * m_camera->eye();
 			lux::Vector view = lux::Vector(0.0, 0.0, 0.0) - eye;
@@ -60,7 +60,7 @@ public:
 	virtual void OnInit() override
 	{
 
-		double rayStepSize = 0.03;
+		double rayStepSize = 0.0001;
 
 		m_camera.reset(new lux::Camera());
 		m_camera->setEyeViewUp(lux::Vector(0.0, 0.0, 7.0), lux::Vector(0.0, 0.0, -1.0), lux::Vector(0.0, 1.0, 0.0));
@@ -156,35 +156,32 @@ public:
 		/// </summary>
 		
 
-		density_field = Alalba::Union<float>(headDensity, bodyDensity);
-		density_field = Alalba::Union<float>(density_field, dressDensity);
-		density_field = Alalba::Union<float>(density_field, braceletDensity);
+		humanoid_density_field = Alalba::Union<float>(headDensity, bodyDensity);
+		humanoid_density_field = Alalba::Union<float>(humanoid_density_field, dressDensity);
+		humanoid_density_field = Alalba::Union<float>(humanoid_density_field, braceletDensity);
 
 
-		color_field = Alalba::Union<lux::Color>(headColor, bodyColor);
-		color_field = Alalba::Union<lux::Color>(color_field, dressColor);
-		color_field = Alalba::Union<lux::Color>(color_field, braceletColor);
+		humanoid_color_field = Alalba::Union<lux::Color>(headColor, bodyColor);
+		humanoid_color_field = Alalba::Union<lux::Color>(humanoid_color_field, dressColor);
+		humanoid_color_field = Alalba::Union<lux::Color>(humanoid_color_field, braceletColor);
 
 		ALALBA_INFO("Grid Humanoid Density Field");
 		auto start = std::chrono::system_clock::now();
-		density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, density_field);
+		density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, humanoid_density_field);
 		auto end = std::chrono::system_clock::now();
 		double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_ERROR("Grid Humanoid Density Field Done {0}s", elapsed);
+		ALALBA_TRACE("Grid Humanoid Density Field Done {0}s", elapsed);
 		
 		ALALBA_INFO("Grid Humanoid Color Field");
 		start = std::chrono::system_clock::now();
-		color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, color_field);
+		color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, humanoid_color_field);
 		end = std::chrono::system_clock::now();
 		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_ERROR("Grid Humanoid Color Field Done {0}s", elapsed);
-
+		ALALBA_TRACE("Grid Humanoid Color Field Done {0}s", elapsed);
 
 
 		//// bunny 
-		Alalba::Mesh bunny = Alalba::Mesh("model/bunny.obj");
-		//Alalba::Mesh bunny = Alalba::Mesh("model/smallajax.obj");
-		
+		Alalba::Mesh bunny = Alalba::Mesh("model/bunny.obj");		
 		ALALBA_INFO(bunny.m_triangles.size());
 		ALALBA_INFO("Bunny Dimension:{0}", bunny.dimension);
 		ALALBA_INFO("Bunny Center:{0}", bunny.center);
@@ -192,14 +189,14 @@ public:
 
 		start = std::chrono::system_clock::now();
 
-		Alalba::ScalarField bunny_grid = Alalba::LevelSet(bunny, bunny.dimension, { 1025,1025,1025 }, 8 , 4);
+		Alalba::ScalarField bunny_grid = Alalba::LevelSet(bunny, bunny.dimension * 1.1, { 513,513,513 }, 8 , 4);
 		
 		end = std::chrono::system_clock::now();
 		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_ERROR("Level Set Bunny Done {0}s", elapsed);
+		ALALBA_TRACE("Level Set Bunny Done {0}s", elapsed);
 
-		bunny_grid = Alalba::Scale<float>(bunny_grid, lux::Vector(10.0, 10.0, 10.0));;
-		bunny_grid = Alalba::Translate<float>(bunny_grid, lux::Vector(-1.5, 0.0, 0.0));;
+		bunny_grid = Alalba::Scale<float>(bunny_grid, lux::Vector(10.0, 10.0, 10.0));
+		bunny_grid = Alalba::Translate<float>(bunny_grid, lux::Vector(-1.5, 0.0, 0.0));
 		mask = Alalba::Mask<float>(bunny_grid);
 
 		Alalba::ColorField bunny_color_grid = Alalba::Multiply<lux::Color>(greenColor, mask);
@@ -207,7 +204,6 @@ public:
 		
 		//// Ajax
 		Alalba::Mesh ajax = Alalba::Mesh("model/smallajax.obj");
-		//Alalba::Mesh bunny = Alalba::Mesh("model/smallajax.obj");
 
 		ALALBA_INFO(ajax.m_triangles.size());
 		ALALBA_INFO("Ajax Dimension:{0}", ajax.dimension);
@@ -216,11 +212,11 @@ public:
 
 		start = std::chrono::system_clock::now();
 
-		Alalba::ScalarField ajax_grid = Alalba::LevelSet(ajax, ajax.dimension, { 1025,1025,1025 }, 8, 4);
+		Alalba::ScalarField ajax_grid = Alalba::LevelSet(ajax, ajax.dimension * 1.1, { 513,513,513 }, 8, 4);
 
 		end = std::chrono::system_clock::now();
 		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_ERROR("Level Set ajax Done {0}s", elapsed);
+		ALALBA_TRACE("Level Set ajax Done {0}s", elapsed);
 
 		ajax_grid = Alalba::Scale<float>(ajax_grid, lux::Vector(0.05, 0.05, 0.05));;
 		ajax_grid = Alalba::Translate<float>(ajax_grid, lux::Vector(1.5, 0.0, 0.0));;
@@ -229,15 +225,12 @@ public:
 		Alalba::ColorField ajax_color_grid = Alalba::Multiply<lux::Color>(yellowColor, mask);
 
 
-
 		density_grid = Alalba::Union<float>(density_grid, bunny_grid);
 		density_grid = Alalba::Union<float>(density_grid, ajax_grid);
+		density_grid = Alalba::Clamp<float>(density_grid, 0, 0.01);
 
 		color_grid = Alalba::Union<lux::Color>(color_grid, bunny_color_grid);
 		color_grid = Alalba::Union<lux::Color>(color_grid, ajax_color_grid);
-
-
-
 
 	}
 
@@ -250,14 +243,11 @@ public:
 
 private:
 
-
 	Alalba::ScalarField density_grid;
 	Alalba::ColorField color_grid;
-
-
 	
-	Alalba::ScalarField density_field;
-	Alalba::ColorField color_field;
+	Alalba::ScalarField humanoid_density_field;
+	Alalba::ColorField humanoid_color_field;
 
 	std::unique_ptr<lux::Camera> m_camera;
 	std::unique_ptr<Alalba::Renderer> m_renderer;

@@ -8,7 +8,7 @@
 **.nsight-gfxproj
 **.DotSettings
 **.user
-
+**.exr
 # Binaries
 **/bin/
 vendor/bin/premake/
