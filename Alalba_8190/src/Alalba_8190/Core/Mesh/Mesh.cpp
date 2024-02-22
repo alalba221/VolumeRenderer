@@ -63,7 +63,7 @@ namespace Alalba
     }
     if (!reader.Warning().empty())
     {
-      std::cout << "TinyObjReader: " << reader.Warning();
+      ALALBA_WARN("TinyObjReader: {0}", reader.Warning());
     }
 
     auto& attrib = reader.GetAttrib();

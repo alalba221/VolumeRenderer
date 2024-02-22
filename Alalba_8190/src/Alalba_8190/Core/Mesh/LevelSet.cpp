@@ -31,7 +31,6 @@ namespace Alalba
 		lux::Vector p_p0 = triangle.p0 - p;
 
 		float distance = p_p0 * triangle.normal;
-		//ALALBA_ERROR(distance);
 		
 		return distance;
 

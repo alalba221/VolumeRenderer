@@ -3,15 +3,15 @@
 #include "tinyexr.h"
 namespace Alalba
 {
-  Renderer::Renderer(signed int width, signed int height)
-    :m_width(width),m_height(height)
+  Renderer::Renderer(signed int width, signed int height, double deltaS)
+    :m_width(width),m_height(height), m_rayMarcherDeltaS(deltaS)
   {
 
   }
 
   void Renderer::Render(const lux::Camera& camera, const ScalarField& densityField, const ColorField& colorField)
   {
-    m_rayMarcher.reset(new RayMarcher(camera, m_width, m_height));
+    m_rayMarcher.reset(new RayMarcher(camera, m_width, m_height, m_rayMarcherDeltaS));
     m_rayMarcher->RayMarch(densityField, colorField);
     
     m_frameBuffer = m_rayMarcher->GetResult();
