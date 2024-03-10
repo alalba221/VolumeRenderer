@@ -50,10 +50,7 @@ namespace Alalba
 		{
 			
 			float desity = densityField->eval(m_Positions[index]);
-			//if (desity != 0)
-			//{
-			//	ALALBA_ERROR("DEN {0}", desity);
-			//}
+
 			double deltaT = 0.0;
 
 			if (desity >= 0)
@@ -66,8 +63,11 @@ namespace Alalba
 
 				m_Transmissivities[index] *= deltaT;
 			} // end if
-
-			m_Positions[index] += m_deltaS * direction;
+			else
+			{
+				break;
+			}
+			m_Positions[index] += direction*m_deltaS;
 			m_distances[index] += m_deltaS;
 		}//end while
 

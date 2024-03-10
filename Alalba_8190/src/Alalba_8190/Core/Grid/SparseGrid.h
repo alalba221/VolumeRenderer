@@ -54,6 +54,8 @@ namespace Alalba
 			}
 		}
 
+		void Allocate(std::shared_ptr< lux::Volume<T> > field);
+
 		void Set(INT3 index3d, const T& value);
 		
 		const T& Get(int i,int j, int k) const;
@@ -131,7 +133,7 @@ namespace Alalba
 			:center(center), dimesion(dimesion), m_resolution(resolution), m_partionSize(partionSize)
 		{
 			sparseGridPtr = std::make_shared<SparseGrid<T>>(center, dimesion, m_resolution, m_partionSize);
-			//sparseGridPtr->StampGrid(m_fieldPtr);
+			
 		};
 		~SparseGridVolume() {};
 
@@ -140,24 +142,28 @@ namespace Alalba
 		// const &
 		std::shared_ptr < SparseGrid<T> > Grid() { return sparseGridPtr; }
 
+		const T& DefaultValue()const { return sparseGridPtr->m_defaultValue; }
+
 	private:
 		lux::Vector center;
 		lux::Vector dimesion;
 
 		INT3 m_resolution;
 		int m_partionSize;
-		std::shared_ptr< lux::Volume<T> > m_fieldPtr;
-
+		
 		std::shared_ptr < SparseGrid<T> > sparseGridPtr;
 
 	};
 
 	template<typename T>
-	std::shared_ptr<SparseGridVolume<T>> Grid(const lux::Vector& center, const lux::Vector& dimesion, INT3 resolution, int partionSize,
+	std::shared_ptr<lux::Volume<T>> Grid(const lux::Vector& center, const lux::Vector& dimesion, INT3 resolution, int partionSize,
 		const std::shared_ptr< lux::Volume<T> >& fieldPtr)
 	{
 
 		std::shared_ptr<SparseGridVolume<T>> grid = std::make_shared< SparseGridVolume<T> >(center, dimesion, resolution, partionSize);
+		
+		// SHOULD allocate first, but for efficiency consideration, comment this out temporaly
+		//grid->Grid()->Allocate(fieldPtr);
 		grid->Grid()->StampGrid(fieldPtr);
 
 		return grid;

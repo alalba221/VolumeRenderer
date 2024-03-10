@@ -22,7 +22,7 @@ namespace Alalba
 
 	
 	template<typename T>
-	std::shared_ptr<AddVolume<T>> Add(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
+	std::shared_ptr<lux::Volume<T>> Add(const std::shared_ptr< lux::Volume<T> >& fieldPtr1,
 		const std::shared_ptr< lux::Volume<T> >& fieldPtr2)
 	{
 		return std::make_shared< AddVolume<T> >(fieldPtr1, fieldPtr2);

@@ -60,7 +60,7 @@ public:
 	virtual void OnInit() override
 	{
 
-		double rayStepSize = 0.0001;
+		double rayStepSize = 0.03;
 
 		m_camera.reset(new lux::Camera());
 		m_camera->setEyeViewUp(lux::Vector(0.0, 0.0, 7.0), lux::Vector(0.0, 0.0, -1.0), lux::Vector(0.0, 1.0, 0.0));
@@ -232,6 +232,9 @@ public:
 		color_grid = Alalba::Union<lux::Color>(color_grid, bunny_color_grid);
 		color_grid = Alalba::Union<lux::Color>(color_grid, ajax_color_grid);
 
+		// Light
+
+
 	}
 
 	virtual void OnShutdown() override
@@ -251,6 +254,9 @@ private:
 
 	std::unique_ptr<lux::Camera> m_camera;
 	std::unique_ptr<Alalba::Renderer> m_renderer;
+
+	std::shared_ptr<Alalba::PointLight> pointLight;
+	Alalba::ScalarField TL;
 };
 
 

@@ -11,6 +11,8 @@ namespace Alalba
 
 		m_blockDimension = INT3(resolution.i / partionSize + 1, resolution.j / partionSize + 1, resolution.k / partionSize + 1);
 
+		ALALBA_ERROR(m_blockDimension);
+
 		LLRC = lux::Vector(m_center.X() - m_dimension.X() / 2, m_center.Y() - m_dimension.Y() / 2, m_center.Z() - m_dimension.Z() / 2);
 		RUFC = lux::Vector(m_center.X() + m_dimension.X() / 2, m_center.Y() + m_dimension.Y() / 2, m_center.Z() + m_dimension.Z() / 2);
 
@@ -27,9 +29,67 @@ namespace Alalba
 	};
 
 
+	template<class T>
+	inline void SparseGrid<T>::Allocate(std::shared_ptr<lux::Volume<T>> field)
+	{
+		int num_block = m_blockDimension.i * m_blockDimension.j * m_blockDimension.k;
+		int num_grid = m_partionSize * m_partionSize * m_partionSize;
+#pragma omp for 
+		for (int block = 0; block < num_block; block++)
+		{
+			int i_block = block % m_blockDimension.i;
+			int j_block = (block / m_blockDimension.i) % m_blockDimension.j;
+			int k_block = block / (m_blockDimension.i * m_blockDimension.j);
+
+			int i_base = i_block * m_partionSize;
+			int j_base = j_block * m_partionSize;
+			int k_base = k_block * m_partionSize;
+
+			bool validBlock = false;
+			
+			for (int grid = 0; grid < num_grid; grid++)
+			{
+				//0. get position
+				int i_grid = grid % m_partionSize;
+				int j_grid = (grid / m_partionSize) % m_partionSize;
+				int k_grid = grid / (m_partionSize * m_partionSize);
+
+				INT3 index = { i_base + i_grid, j_base + j_grid ,k_base + k_grid };
+
+				lux::Vector offset = lux::Vector(index.i * m_precision.X(), index.j * m_precision.Y(), index.k * m_precision.Z());
+				lux::Vector pos = LLRC + offset;
+
+				if ((field->eval(pos)) != T())
+				{
+					
+					validBlock = true;
+					//ALALBA_ERROR(block);
+					break;
+				}
+			}
+
+			if (validBlock)
+			{
+				
+				m_data[block] = new T[m_partionSize * m_partionSize * m_partionSize];
+
+				//if (m_data[block] != nullptr)
+				//{
+				//	ALALBA_INFO("ssssss");
+				//}
+				for (int i = 0; i < m_partionSize * m_partionSize * m_partionSize; i++)
+				{
+					m_data[block][i] = m_defaultValue;
+				}
+			}
+		}
+	
+	}
+
 	template <class T>
 	void SparseGrid<T>::Set(INT3 index3d, const T& value)
 	{
+		//ALALBA_ERROR("SET");
 		
 		//0. todo: check if in the grid
 		if (!isInside(index3d.i, index3d.j, index3d.k))
@@ -40,18 +100,24 @@ namespace Alalba
 		int block_index = ib + m_blockDimension.i * (jb + m_blockDimension.j * kb);
 
 		// check whether this block has been allocated. If not, allocate it and set to default value
-		if (m_data[block_index] == nullptr && value != m_defaultValue)
+//#pragma omp critical
 		{
-			m_data[block_index] = new T[m_partionSize * m_partionSize * m_partionSize];
-			//ALALBA_ERROR("new block {0}", block_index);
-			for (int i = 0; i < m_partionSize * m_partionSize * m_partionSize; i++) 
-			{ 
-				m_data[block_index][i] = m_defaultValue;
+			if (m_data[block_index] == nullptr && value != m_defaultValue)
+			{
+				m_data[block_index] = new T[m_partionSize * m_partionSize * m_partionSize];
+
+				for (int i = 0; i < m_partionSize * m_partionSize * m_partionSize; i++)
+				{
+					m_data[block_index][i] = m_defaultValue;
+				}
 			}
 		}
 		// find cell inside the block
-		if(m_data[block_index]!=nullptr && value != m_defaultValue)
+
+		if((m_data[block_index]!=nullptr) && (value != m_defaultValue))
 		{
+			
+			//
 			int icell = index3d.i % m_partionSize;
 			int jcell = index3d.j % m_partionSize;
 			int kcell = index3d.k % m_partionSize;
@@ -167,8 +233,7 @@ namespace Alalba
 
 	template <class T>
 	void SparseGrid<T>::StampGrid(std::shared_ptr< lux::Volume<T> > fieldptr)
-	{
-		
+	{	
 #pragma omp parallel for
 		for (int index1D = 0; index1D < m_resolution.i * m_resolution.j * m_resolution.k; index1D++)
 		{
