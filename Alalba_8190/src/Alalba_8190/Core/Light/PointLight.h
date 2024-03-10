@@ -9,13 +9,15 @@ namespace Alalba
 	{
 	public:
 		PointLight(const lux::Color& color, const lux::Vector& postion);
-		~PointLight() { m_dsm->Grid()->CleanData(); };
+		~PointLight() {  };
 	
 		void GenerateDSM(const ScalarField& densityField, const lux::Vector& center, 
 			const lux::Vector& dimesion, INT3 resolution, int partionSize, double deltaS, double Kappa);
 		
 		const std::shared_ptr<SparseGridVolume<float>>& DSM() const { return m_dsm; };
-	
+
+		const lux::Color& Color()const {return m_color; }
+		ScalarField TL;
 	private:
 		void MatchSingleRay(INT3 index, const ScalarField& densityField, double deltaS, double Kappa);
 	private:

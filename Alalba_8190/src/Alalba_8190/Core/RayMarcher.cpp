@@ -3,7 +3,8 @@
 #include "omp.h"
 namespace Alalba
 {
-	RayMarcher::RayMarcher(const lux::Camera& camera, signed int width, signed int height, double deltaS, double K, double minT)
+	RayMarcher::RayMarcher(const lux::Camera& camera, 
+		signed int width, signed int height, double deltaS, double K, double minT)
 		:m_camera(camera), m_width(width), m_height(height), m_deltaS(deltaS), m_K(K), m_minTransmisity(minT)
 	{
 		m_Lps.resize(width * height);
@@ -33,7 +34,8 @@ namespace Alalba
 	
 	void RayMarcher::MarchSigleRay(signed int index,
 		const ScalarField& densityField,
-		const ColorField& colorField)
+		const ColorField& colorField,
+		const PointLight& keyLight, const PointLight& fillLight, const PointLight& rimLight)
 	{
 		lux::Vector direction = m_Directions[index];
 		double nearDistance = m_nearPlanes[index];
@@ -56,7 +58,19 @@ namespace Alalba
 			if (desity >= 0)
 			{
 			
-				const lux::Color color = colorField->eval(m_Positions[index]);
+				lux::Color color_material = colorField->eval(m_Positions[index]);
+				
+				float keyT = (keyLight.TL)->eval(m_Positions[index]);
+				float rimT = (rimLight.TL)->eval(m_Positions[index]);
+				float fillT = (fillLight.TL)->eval(m_Positions[index]);
+
+				//ALALBA_ERROR("Transmisity: {0},{1},{2}", keyT, rimT, fillT);
+				lux::Color key = keyLight.Color() * keyT;
+				lux::Color rim = rimLight.Color() * rimT;
+				lux::Color fill = fillLight.Color() * fillT;
+	
+				lux::Color color = color_material *( key + rim + fill);
+
 				deltaT = exp(-m_K * m_deltaS * desity);
 
 				m_Lps[index] += color * (1.0 - deltaT) * m_Transmissivities[index] / m_K;
@@ -75,13 +89,14 @@ namespace Alalba
 
 	}
 
-	void RayMarcher::RayMarch(const ScalarField& densityFiled, const ColorField& colorFiled)
+	void RayMarcher::RayMarch(const ScalarField& densityFiled, const ColorField& colorFiled,
+		const PointLight& keyLight, const PointLight& fillLight, const PointLight& rimLight)
 	{
 
 #pragma omp parallel for
 		for (signed int pixel = 0; pixel < m_width * m_height; pixel++)
 		{
-			MarchSigleRay(pixel, densityFiled, colorFiled);
+			MarchSigleRay(pixel, densityFiled, colorFiled, keyLight, fillLight, rimLight);
 		}// end for
 
 		ALALBA_INFO("Ray Marching Done");

@@ -163,7 +163,7 @@ namespace Alalba
 		std::shared_ptr<SparseGridVolume<T>> grid = std::make_shared< SparseGridVolume<T> >(center, dimesion, resolution, partionSize);
 		
 		// SHOULD allocate first, but for efficiency consideration, comment this out temporaly
-		//grid->Grid()->Allocate(fieldPtr);
+		grid->Grid()->Allocate(fieldPtr);
 		grid->Grid()->StampGrid(fieldPtr);
 
 		return grid;

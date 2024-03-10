@@ -9,10 +9,11 @@ namespace Alalba
 
   }
 
-  void Renderer::Render(const lux::Camera& camera, const ScalarField& densityField, const ColorField& colorField)
+  void Renderer::Render(const lux::Camera& camera, const ScalarField& densityField, const ColorField& colorField,
+    const PointLight& keyLight, const PointLight& fillLight, const PointLight& rimLight)
   {
-    m_rayMarcher.reset(new RayMarcher(camera, m_width, m_height, m_rayMarcherDeltaS));
-    m_rayMarcher->RayMarch(densityField, colorField);
+    m_rayMarcher.reset(new RayMarcher(camera,m_width, m_height, m_rayMarcherDeltaS));
+    m_rayMarcher->RayMarch(densityField, colorField, keyLight, fillLight, rimLight);
     
     m_frameBuffer = m_rayMarcher->GetResult();
   }

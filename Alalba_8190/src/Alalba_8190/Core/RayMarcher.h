@@ -3,18 +3,22 @@
 #include "Camera.h"
 #include "Volume.h"
 #include "ImplicitFunction/Fields.h"
+#include "Alalba_8190/Core/Light/PointLight.h"
 namespace Alalba
 {
 	class RayMarcher
 	{
 	public:
-		RayMarcher(const lux::Camera& camera, signed int width, signed int height, double deltaS = 0.01, double K = 2.0, double minT=0.0);
+		RayMarcher(const lux::Camera& camera,
+			signed int width, signed int height, double deltaS = 0.01, double K = 2.0, double minT=0.0);
 		~RayMarcher() { Clean(); }
 		void Clean() { };
 		//void MarchSigleLight(const lux::Vector& np, const lux::Volume<float>& sdf);
-		void MarchSigleRay(signed int index, const ScalarField& densityField, const ColorField& colorField);
+		void MarchSigleRay(signed int index, const ScalarField& densityField, const ColorField& colorField, 
+			const PointLight& keyLight, const PointLight& fillLight, const PointLight& rimLight);
 
-		void RayMarch( const ScalarField& densityFiled, const ColorField& colorFiled);
+		void RayMarch( const ScalarField& densityFiled, const ColorField& colorFiled,
+			const PointLight& keyLight, const PointLight& fillLight, const PointLight& rimLight);
 
 		const std::vector<lux::Color>& GetResult()const { return m_Lps; };
 	private:

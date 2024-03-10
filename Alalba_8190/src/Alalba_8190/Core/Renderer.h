@@ -2,7 +2,7 @@
 #include "Camera.h"
 #include "Volume.h"
 #include "RayMarcher.h"
-
+#include "Alalba_8190/Core/Light/PointLight.h"
 
 namespace Alalba 
 {
@@ -12,7 +12,8 @@ namespace Alalba
 		Renderer(signed int width, signed int height, double deltaS = 0.02);
 		~Renderer() {};
 		
-		void Render(const lux::Camera& camera, const ScalarField& densityField, const ColorField& colorField );
+		void Render(const lux::Camera& camera, const ScalarField& densityField, const ColorField& colorField,
+			const PointLight & keyLight, const PointLight& fillLight, const PointLight& rimLight);
 
 		bool SaveImage(const char* outfilename);
 

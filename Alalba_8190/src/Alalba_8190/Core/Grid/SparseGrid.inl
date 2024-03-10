@@ -11,7 +11,7 @@ namespace Alalba
 
 		m_blockDimension = INT3(resolution.i / partionSize + 1, resolution.j / partionSize + 1, resolution.k / partionSize + 1);
 
-		ALALBA_ERROR(m_blockDimension);
+		//ALALBA_ERROR(m_blockDimension);
 
 		LLRC = lux::Vector(m_center.X() - m_dimension.X() / 2, m_center.Y() - m_dimension.Y() / 2, m_center.Z() - m_dimension.Z() / 2);
 		RUFC = lux::Vector(m_center.X() + m_dimension.X() / 2, m_center.Y() + m_dimension.Y() / 2, m_center.Z() + m_dimension.Z() / 2);
@@ -34,7 +34,7 @@ namespace Alalba
 	{
 		int num_block = m_blockDimension.i * m_blockDimension.j * m_blockDimension.k;
 		int num_grid = m_partionSize * m_partionSize * m_partionSize;
-#pragma omp for 
+#pragma omp parallel for
 		for (int block = 0; block < num_block; block++)
 		{
 			int i_block = block % m_blockDimension.i;
@@ -83,6 +83,7 @@ namespace Alalba
 				}
 			}
 		}
+		
 	
 	}
 
