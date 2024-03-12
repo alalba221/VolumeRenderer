@@ -43,6 +43,7 @@ namespace Alalba
 
 		void CleanData()
 		{
+			//ALALBA_ERROR("Clean Grid");
 			if (m_data != nullptr)
 			{
 				for (int i = 0; i < m_blockDimension.i * m_blockDimension.j * m_blockDimension.k; i++)

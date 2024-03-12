@@ -35,6 +35,7 @@ project "Alalba_8190"
 		"%{IncludeDir.tinyexr}",
 		"%{IncludeDir.startup}",
 		"%{IncludeDir.tinyobj}",
+		"%{IncludeDir.perlin_noise}",
 		
 	}
 

@@ -1,4 +1,4 @@
-project "Test"
+project "Noise"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -16,7 +16,8 @@ project "Test"
       
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.tinyexr}",
-    "%{IncludeDir.startup}",
+		"%{IncludeDir.startup}",
+		"%{IncludeDir.perlin_noise}",
    }
    -- prebuildcommands [[for %%i in (Shaders\*.vert Shaders\*.frag Shaders\*.comp ) do (C:\VulkanSDK\1.3.236.0\Bin\glslc.exe %%i -o "%%~dpi\%%~ni.spv")]]
     links

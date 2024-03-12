@@ -22,6 +22,7 @@ class Color
   public:
 
    Color(){ xyzw[0] = xyzw[1] = xyzw[2] = xyzw[3] = 0; }
+   ~Color() { };
 
    Color(const Color& v)
    { 
@@ -39,7 +40,7 @@ class Color
       xyzw[3] = d; 
    }
 
-   ~Color(){}
+   //~Color(){}
 
    //!  Set all four components
    void set( const double vx, const double vy, const double vz, const double vw )

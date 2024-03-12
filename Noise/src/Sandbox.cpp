@@ -19,9 +19,7 @@ public:
 
 	virtual void OnUpdate() override
 	{
-		float step = 2*M_PI / 120.0;
-
-		for (int i = 0; i < 120; i++)
+		for (int i = 0; i < 500; i++)
 		{
 			ALALBA_INFO("{0}th start", i);
 
@@ -35,12 +33,40 @@ public:
 			std::string output = "image/" + index + ".exr";
 
 			
-			lux::Matrix camRotateMatrix;
+//////////////////
+
+			headSDF = std::make_shared<Alalba::Sphere>(lux::Vector(0.0, 0.0, 0.0), 2);
+
+			// NOISE
+			Alalba::Noise_t parm;
+			parm.amplitude = 1.5;
+			parm.frequency = 0.5;
+			parm.octaves = 4;
+			parm.roughness = 0.8;
+			parm.translate = lux::Vector(0.0, 0.0, -0.1*i);
+
+			//Alalba::ScalarField fspn;
+			fspn.reset(new Alalba::FSPN(parm));
+
+			headSDF = Alalba::Add<float>(headSDF, fspn);
+
+			headDensity = Alalba::Clamp<float>(headSDF, 0.0f, 1.0f);
+
+			Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
+			headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
+
+
+
+
 		
-			camRotateMatrix = lux::rotation(lux::Vector(0.0, 1.0, 0.0), step);
-			lux::Vector eye = camRotateMatrix * m_camera->eye();
-			lux::Vector view = lux::Vector(0.0, 0.0, 0.0) - eye;
-			m_camera->setEyeViewUp(eye, view, lux::Vector(0, 1, 0));
+			density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headDensity);
+	
+			color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headColor);
+
+
+
+
+			///////////////////////
 
 	
 			m_renderer->Render(*m_camera.get(), density_grid, color_grid,*m_key,*m_fill,*m_rim);
@@ -49,7 +75,7 @@ public:
 
 
 			auto end = std::chrono::system_clock::now();
-			double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+			auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
 			
 			ALALBA_ERROR("{0} Done, {1}s", output, elapsed);
 
@@ -68,7 +94,7 @@ public:
 		m_camera->setFarPlane(9.);
 		
 
-		m_renderer.reset(new Alalba::Renderer(1920, 1080, rayStepSize));
+		m_renderer.reset(new Alalba::Renderer(960, 540, rayStepSize));
 		
 		Alalba::ColorField redColor;
 		redColor.reset(new Alalba::ConstantColor(lux::Color(1.0, 0.0/255, 127.0/255.0, 1.0)));
@@ -82,26 +108,34 @@ public:
 		Alalba::ColorField blueColor;
 		blueColor.reset(new Alalba::ConstantColor(lux::Color(0.0, 0.0, 1.0, 1.0)));
 
-		Alalba::ColorField woodColor;
+		
 		woodColor.reset(new Alalba::ConstantColor(lux::Color(86.0 / 255, 47.0 / 255.0, 14.0 / 255.0, 1.0)));
 
 
-		/// 0. head
-		Alalba::ScalarField headSDF;
-		Alalba::ScalarField headDensity;
-		Alalba::ColorField headColor;
+		/// 0. circle
+		
 
 		headSDF = std::make_shared<Alalba::Sphere>(lux::Vector(0.0, 0.0, 0.0), 2);
 
-		
+		// NOISE
+		Alalba::Noise_t parm;
+		parm.amplitude = 1.5;
+		parm.frequency = 0.5;
+		parm.octaves = 4;
+		parm.roughness = 0.8;
+		parm.translate = lux::Vector(0.0, 0.0, 0.0);
+
+		//Alalba::ScalarField fspn;
+		fspn.reset(new Alalba::FSPN(parm));
+
+		headSDF = Alalba::Add<float>(headSDF, fspn);
+
 		headDensity = Alalba::Clamp<float>(headSDF, 0.0f, 1.0f);
 		
 		Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
 		headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
 
 		
-		
-
 
 
 		ALALBA_INFO("Grid Humanoid Density Field");
@@ -118,6 +152,9 @@ public:
 		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
 		ALALBA_TRACE("Grid Humanoid Color Field Done {0}s", elapsed);
 
+	
+
+	
 
 		
 
@@ -149,9 +186,18 @@ public:
 
 private:
 
+	// test noise
+	Alalba::ColorField woodColor;
+
+	Alalba::ScalarField headSDF;
+	Alalba::ScalarField headDensity;
+	Alalba::ColorField headColor;
+	// 
+
 	Alalba::ScalarField density_grid;
 	Alalba::ColorField color_grid;
-
+	
+	Alalba::ScalarField fspn;
 
 	std::unique_ptr<lux::Camera> m_camera;
 	std::unique_ptr<Alalba::Renderer> m_renderer;
@@ -159,6 +205,8 @@ private:
 	std::unique_ptr<Alalba::PointLight> m_key;
 	std::unique_ptr<Alalba::PointLight> m_fill;
 	std::unique_ptr<Alalba::PointLight> m_rim;
+
+
 
 };
 

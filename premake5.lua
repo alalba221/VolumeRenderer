@@ -14,4 +14,4 @@ group ""
 
 include "Alalba_8190"
 include "Sandbox"
-include "Test"
+include "Noise"
