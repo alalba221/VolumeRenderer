@@ -48,3 +48,15 @@ $12$ second for each frame
 ![image-20240222081614811](presentationImg/image-20240222081614811.png)
 
 ![image-20240222081623919](presentationImg/image-20240222081623919.png)
+
+### Light DSM
+
+![image-20240310163332101](presentationImg\image-20240310163332101.png)
+
+![image-20240310163102254](presentationImg\image-20240310163102254.png)
+
+
+
+![](presentationImg/image-20240313194229080.png)
+
+![image-20240313202918259](presentationImg\image-20240313202918259.png)

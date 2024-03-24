@@ -7,9 +7,17 @@ namespace Alalba
   Mesh::Mesh(std::string filepath)
   {
     std::vector<lux::Vector> vertices;     // 顶点坐标
+    //std::vector <lux::Vector> vertices_norm;//
     std::vector<int> indices;    // 顶点索引
 
+    //ReadOBJ(filepath, vertices, indices, vertices_norm);
+
     ReadOBJ(filepath, vertices, indices);
+
+    //for (int i = 0; i < indices.size(); i += 3) {
+    //  m_triangles.push_back(Triangle(vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]]
+    //  , vertices_norm[indices[i]], vertices_norm[indices[i + 1]], vertices_norm[indices[i + 2]]));
+    //}
 
     for (int i = 0; i < indices.size(); i += 3) {
       m_triangles.push_back(Triangle(vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]]));
@@ -77,7 +85,17 @@ namespace Alalba
       tinyobj::real_t vz = attrib.vertices[i + 2];
       lux::Vector v = lux::Vector(vx, vy, vz);
       vertices.push_back(v);
+
+      //tinyobj::real_t nx = attrib.normals[i + 0];
+      //tinyobj::real_t ny = attrib.normals[i + 1];
+      //tinyobj::real_t nz = attrib.normals[i + 2];
+
+      //lux::Vector n = lux::Vector(nx, ny, nz);
+      //vertices_norm.push_back(n);
     }
+
+
+
 
     for (size_t s = 0; s < shapes.size(); s++)
     {

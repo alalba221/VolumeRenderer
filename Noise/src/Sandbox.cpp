@@ -46,19 +46,17 @@ public:
 			parm.translate = lux::Vector(0.0, 0.0, -0.1*i);
 
 			//Alalba::ScalarField fspn;
-			fspn.reset(new Alalba::FSPN(parm));
-
+			fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
+			
 			headSDF = Alalba::Add<float>(headSDF, fspn);
 
-			headDensity = Alalba::Clamp<float>(headSDF, 0.0f, 1.0f);
-
+			
 			Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
 			headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
 
 
 
 
-		
 			density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headDensity);
 	
 			color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headColor);
@@ -126,7 +124,7 @@ public:
 		parm.translate = lux::Vector(0.0, 0.0, 0.0);
 
 		//Alalba::ScalarField fspn;
-		fspn.reset(new Alalba::FSPN(parm));
+		fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
 
 		headSDF = Alalba::Add<float>(headSDF, fspn);
 
@@ -160,13 +158,13 @@ public:
 
 		// lights
 		lux::Vector keyPos = lux::Vector(0, 4, 0);
-		m_key.reset( new Alalba::PointLight(lux::Color(10.0, 10.0, 10.0, 1.0), keyPos));
+		m_key.reset( new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0)*10.0, keyPos));
 
 		lux::Vector fillPos = lux::Vector(0, -4, 0);
-		m_fill.reset(new Alalba::PointLight(lux::Color(2.0, 2.0, 2.0, 1.0), fillPos));
+		m_fill.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0)*2.0, fillPos));
 
 		lux::Vector rimPos = lux::Vector(0, 0, -4);
-		m_rim.reset(new Alalba::PointLight(lux::Color(4.0, 4.0, 4.0, 1.0), rimPos));
+		m_rim.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0)*4.0, rimPos));
 		
 		ALALBA_TRACE("Key dsm");
 		m_key->GenerateDSM(density_grid, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), {200,200,200 },8, 0.1,2.0);

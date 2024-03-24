@@ -56,12 +56,7 @@ namespace Alalba
 				MatchSingleRay(index, densityField, deltaS, Kappa);
 			}
 		}
-//#pragma omp parallel for
-		/*for (int index1D = 0; index1D < resolution.i * resolution.j * resolution.k; index1D++)
-		{
-			INT3 index3d = m_dsm->Grid()->Index(index1D);
-			MatchSingleRay(index3d, densityField, deltaS, Kappa);
-		}*/
+
 
 		TL = EXP<float>(m_dsm);
 

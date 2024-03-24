@@ -73,10 +73,6 @@ namespace Alalba
 				
 				m_data[block] = new T[m_partionSize * m_partionSize * m_partionSize];
 
-				//if (m_data[block] != nullptr)
-				//{
-				//	ALALBA_INFO("ssssss");
-				//}
 				for (int i = 0; i < m_partionSize * m_partionSize * m_partionSize; i++)
 				{
 					m_data[block][i] = m_defaultValue;

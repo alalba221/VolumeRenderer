@@ -29,27 +29,28 @@ namespace Alalba
 	float DistanceToTriangle(lux::Vector p, Triangle triangle)
 	{
 		lux::Vector p_p0 = triangle.p0 - p;
+		//lux::Vector p_p0 = p - triangle.p0;
 
 		float distance = p_p0 * triangle.normal;
 		
 		return distance;
 
-		return std::abs(distance);
-		lux::Vector projectedP = p + triangle.normal * distance;
+		//return std::abs(distance);
+		//lux::Vector projectedP = p + triangle.normal * distance;
 
 
-		// if can be projected onto triangle
-		if (IsPointInTriangle(projectedP, triangle))
-		{
-			return std::abs(distance);
-			//return 1000.0;
-		}
-		else
-		{
-			//TODO: return distance to edge
-		}
-		
-		return 1000.0;
+		//// if can be projected onto triangle
+		//if (IsPointInTriangle(projectedP, triangle))
+		//{
+		//	return std::abs(distance);
+		//	//return 1000.0;
+		//}
+		//else
+		//{
+		//	//TODO: return distance to edge
+		//}
+		//
+		//return 1000.0;
 	}
 
 
@@ -131,9 +132,9 @@ namespace Alalba
 					for (int k = ext_boundingBoxLLCell.k; k <= ext_boundingBoxRUCell.k; k++)
 					{
 						
-						if (i > boundingBoxLLCell.i && i< boundingBoxLLCell.i
-							&& j> boundingBoxLLCell.j && j < boundingBoxLLCell.j
-							&& k> boundingBoxLLCell.k && k < boundingBoxLLCell.k)
+						if (i > boundingBoxLLCell.i && i< boundingBoxRUCell.i
+							&& j> boundingBoxLLCell.j && j < boundingBoxRUCell.j
+							&& k> boundingBoxLLCell.k && k < boundingBoxRUCell.k)
 							continue;
 
 						if (grid->Grid()->isInside(i, j, k))
@@ -160,9 +161,9 @@ namespace Alalba
 				float distance = DistanceToTriangle(p, Triangle);
 				float gridvalue = grid->Grid()->Get(index);
 
-				if (distance < gridvalue)
+				if (std::abs(distance) < std::abs(gridvalue))
 				{	
-					grid->Grid()->Set(index, distance);
+					grid->Grid()->Set(index, std::abs( distance));
 				}
 			}
 
@@ -170,6 +171,42 @@ namespace Alalba
 
 		/// PROCESS B
 
+//		INT3 block_dim = grid->Grid()->m_blockDimension;
+//		int partitionSize = grid->Grid()->m_partionSize;
+//		int num_blocks = block_dim.i * block_dim.j * block_dim.k;
+//		int num_grids_per_block = partitionSize * partitionSize * partitionSize;
+//
+//		lux::Vector llc = grid->Grid()->LLRC;
+//
+//		lux::Vector precision = grid->Grid()->m_precision;
+//
+//		for (int block = 0; block < num_blocks; block++)
+//		{
+//			if (grid->Grid()->data()[block] == nullptr)
+//				continue;
+//			int i_block = block % block_dim.i;
+//			int j_block = (block / block_dim.i) % block_dim.j;
+//			int k_block = block / (block_dim.i * block_dim.j);
+//
+//			int i_base = i_block * partitionSize;
+//			int j_base = j_block * partitionSize;
+//			int k_base = k_block * partitionSize;
+//#pragma omp parallel for
+//			for (int grid = 0; grid < num_grids_per_block; grid++)
+//			{
+//				int i_grid = grid % partitionSize;
+//				int j_grid = (grid / partitionSize) % partitionSize;
+//				int k_grid = grid / (partitionSize * partitionSize);
+//
+//				INT3 index = { i_base + i_grid, j_base + j_grid ,k_base + k_grid };
+//
+//				lux::Vector offset = lux::Vector(index.i * precision.X(), index.j * precision.Y(), index.k * precision.Z());
+//				lux::Vector pos = llc + offset;
+//
+//
+//				//MatchSingleRay(index, densityField, deltaS, Kappa);
+//			}
+//		}
 
 		return grid;
 	}

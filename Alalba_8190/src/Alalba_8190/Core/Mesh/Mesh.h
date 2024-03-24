@@ -7,12 +7,24 @@ namespace Alalba
 		lux::Vector  p0, p1, p2;
 		lux::Vector normal;
 
-		Triangle(lux::Vector a, lux::Vector b, lux::Vector c) 
+		Triangle(lux::Vector a, lux::Vector b, lux::Vector c, lux::Vector na, lux::Vector nb, lux::Vector nc)
 		:p0(a),p1(b),p2(c)
+		{
+			//lux::Vector e1 = p1 - p0;
+			//lux::Vector e2 = p2 - p0;
+			// normal = (e1 ^ e2).unitvector();
+
+			normal = (nb + na + nc) / 3.0;
+		}
+
+
+		Triangle(lux::Vector a, lux::Vector b, lux::Vector c)
+			:p0(a), p1(b), p2(c)
 		{
 			lux::Vector e1 = p1 - p0;
 			lux::Vector e2 = p2 - p0;
 			normal = (e1 ^ e2).unitvector();
+
 		}
 	};
 
@@ -32,6 +44,7 @@ namespace Alalba
 
 	private:
 		void ReadOBJ(std::string filepath, std::vector<lux::Vector>& vertices, std::vector<int>& indices);
+		//void ReadOBJ(std::string filepath, std::vector<lux::Vector>& vertices, std::vector<int>& indices);
 	public:
 		std::vector<Triangle> m_triangles;
 

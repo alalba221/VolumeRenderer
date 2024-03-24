@@ -70,6 +70,7 @@ namespace Alalba
 				lux::Color fill = fillLight.Color() * fillT;
 	
 				lux::Color color = color_material *( key + rim + fill);
+				//lux::Color color = color_material ;
 
 				deltaT = exp(-m_K * m_deltaS * desity);
 

@@ -15,14 +15,20 @@ namespace Alalba
 		int octaves;
 	};
 
-	
-	class FSPN : public lux::Volume<float>
+
+	class FSPNVolume : public lux::Volume<float>
 	{
 	public:
-
-		FSPN(const Noise_t& param);
-
-		~FSPN() {};
+		
+	/**
+	* @brief
+	* @tparam
+	* @param sdf should be grided 
+	* @return
+	*/
+		FSPNVolume(const Noise_t& param, ScalarField sdf);
+		
+		~FSPNVolume() {};
 	
 		Noise_t& Parameter() { return m_para; }
 
@@ -35,5 +41,17 @@ namespace Alalba
 		float normalized_term;
 		std::vector<float> fjump_pow_n;
 		std::vector<float> roughness_pow_n;
+
+		ScalarField m_sdf;
+
 	};
+
+
+
+
+	template<typename T>
+	std::shared_ptr<lux::Volume<T>> Noise(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const Noise_t& para)
+	{
+		return std::make_shared(FSPNVolume (fieldPtr1, para));
+	}
 }

@@ -77,7 +77,7 @@ public:
 		greenColor.reset(new Alalba::ConstantColor(lux::Color(0.0, 1.0, 0.0, 1.0)));
 
 		Alalba::ColorField yellowColor;
-		yellowColor.reset(new Alalba::ConstantColor(lux::Color(1.0, 1.0, 0.0, 1.0)));
+		yellowColor.reset(new Alalba::ConstantColor(lux::Color(0.0, 1.0, 1.0, 1.0)));
 
 		Alalba::ColorField blueColor;
 		blueColor.reset(new Alalba::ConstantColor(lux::Color(0.0, 0.0, 1.0, 1.0)));
@@ -180,30 +180,8 @@ public:
 		ALALBA_TRACE("Grid Humanoid Color Field Done {0}s", elapsed);
 
 
-		//// bunny 
-		Alalba::Mesh bunny = Alalba::Mesh("model/bunny.obj");
-		ALALBA_INFO(bunny.m_triangles.size());
-		ALALBA_INFO("Bunny Dimension:{0}", bunny.dimension);
-		ALALBA_INFO("Bunny Center:{0}", bunny.center);
-		ALALBA_INFO("Level Set Bunny");
-
-		start = std::chrono::system_clock::now();
-
-		Alalba::ScalarField bunny_grid = Alalba::LevelSet(bunny, bunny.dimension * 1.1, { 513,513,513 }, 8, 4);
-
-		end = std::chrono::system_clock::now();
-		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_TRACE("Level Set Bunny Done {0}s", elapsed);
-
-		bunny_grid = Alalba::Scale<float>(bunny_grid, lux::Vector(10.0, 10.0, 10.0));
-		bunny_grid = Alalba::Translate<float>(bunny_grid, lux::Vector(-1.5, 0.0, 0.0));
-		mask = Alalba::Mask<float>(bunny_grid);
-
-		Alalba::ColorField bunny_color_grid = Alalba::Multiply<lux::Color>(greenColor, mask);
-
-
 		//// Ajax
-		Alalba::Mesh ajax = Alalba::Mesh("model/smallajax.obj");
+		Alalba::Mesh ajax = Alalba::Mesh("model/ajax.obj");
 
 		ALALBA_INFO(ajax.m_triangles.size());
 		ALALBA_INFO("Ajax Dimension:{0}", ajax.dimension);
@@ -212,25 +190,31 @@ public:
 
 		start = std::chrono::system_clock::now();
 
-		Alalba::ScalarField ajax_grid = Alalba::LevelSet(ajax, ajax.dimension * 1.1, { 513,513,513 }, 8, 4);
+		Alalba::ScalarField ajax_grid = Alalba::LevelSet(ajax, ajax.dimension * 1.1, { 513,1025,513 }, 8, 4);
+
+		//Alalba::ScalarField ajax_grid = Alalba::LevelSet(ajax, lux::Vector(4.,4.,4.) , {513,513,513}, 8, 4);
 
 		end = std::chrono::system_clock::now();
 		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
 		ALALBA_TRACE("Level Set ajax Done {0}s\n", elapsed);
 
-		ajax_grid = Alalba::Scale<float>(ajax_grid, lux::Vector(0.05, 0.05, 0.05));;
+		//ajax_grid = Alalba::Scale<float>(ajax_grid, lux::Vector(2., 2., 2.));;
 		ajax_grid = Alalba::Translate<float>(ajax_grid, lux::Vector(1.5, 0.0, 0.0));;
 		mask = Alalba::Mask<float>(ajax_grid);
 
 		Alalba::ColorField ajax_color_grid = Alalba::Multiply<lux::Color>(yellowColor, mask);
 
 
-		density_grid = Alalba::Union<float>(density_grid, bunny_grid);
+		//density_grid = Alalba::Union<float>(density_grid, bunny_grid);
 		density_grid = Alalba::Union<float>(density_grid, ajax_grid);
-		density_grid = Alalba::Clamp<float>(density_grid, 0, 1);
+		density_grid = Alalba::Clamp<float>(density_grid, 0, 1.0);
 
-		color_grid = Alalba::Union<lux::Color>(color_grid, bunny_color_grid);
+		
+
+		//color_grid = Alalba::Union<lux::Color>(color_grid, bunny_color_grid);
 		color_grid = Alalba::Union<lux::Color>(color_grid, ajax_color_grid);
+		
+
 
 		lux::Vector keyPos = lux::Vector(0, 4, 0);
 		m_key.reset(new Alalba::PointLight(lux::Color(10.0, 10.0, 10.0, 1.0), keyPos));

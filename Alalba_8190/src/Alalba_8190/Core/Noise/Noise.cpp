@@ -2,8 +2,9 @@
 #include "Noise.h"
 namespace Alalba
 {
-	FSPN::FSPN(const Noise_t& param)
-		:m_para(param)
+
+	FSPNVolume::FSPNVolume(const Noise_t& param, ScalarField sdf)
+		:m_para(param),m_sdf(sdf)
 	{
 		normalized_term = (1 - m_para.roughness) / (1 - std::pow(m_para.roughness, m_para.octaves));
 
@@ -17,10 +18,12 @@ namespace Alalba
 		}
 	}
 
-	const float FSPN::eval (const lux::Vector& postion) const
+	const float FSPNVolume::eval (const lux::Vector& postion) const
 	{
 		// for circlr only 
 		float radius = 2.0;
+
+		float distance = m_sdf->eval(postion);
 		lux::Vector cpt = (postion - lux::Vector(0, 0, 0)).unitvector() * radius;
 
 		lux::Vector p_with_freq = (cpt - m_para.translate) * m_para.frequency;
