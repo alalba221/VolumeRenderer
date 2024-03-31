@@ -28,9 +28,17 @@ namespace Alalba
 
 	};
 
+	template<class T>
+	bool DefaultCondition(T value)
+	{
+		if (value != T())
+			return true;
+		return false;
+	}
 
 	template<class T>
-	inline void SparseGrid<T>::Allocate(std::shared_ptr<lux::Volume<T>> field)
+	template<class F>
+	inline void SparseGrid<T>::Allocate(std::shared_ptr<lux::Volume<T>> field, F is)
 	{
 		int num_block = m_blockDimension.i * m_blockDimension.j * m_blockDimension.k;
 		int num_grid = m_partionSize * m_partionSize * m_partionSize;
@@ -59,7 +67,8 @@ namespace Alalba
 				lux::Vector offset = lux::Vector(index.i * m_precision.X(), index.j * m_precision.Y(), index.k * m_precision.Z());
 				lux::Vector pos = LLRC + offset;
 
-				if ((field->eval(pos)) != T())
+				if (is(field->eval(pos)))
+				//if ((field->eval(pos)) != T())
 				{
 					
 					validBlock = true;

@@ -48,10 +48,16 @@ namespace Alalba
 
 
 
-
+	/**
+	 * @brief 
+	 * @tparam T 
+	 * @param grided_sdf 
+	 * @param para 
+	 * @return 
+	*/
 	template<typename T>
-	std::shared_ptr<lux::Volume<T>> Noise(const std::shared_ptr< lux::Volume<T> >& fieldPtr1, const Noise_t& para)
+	std::shared_ptr<lux::Volume<T>> Noise(const std::shared_ptr< lux::Volume<T> >& grided_sdf, const Noise_t& para)
 	{
-		return std::make_shared(FSPNVolume (fieldPtr1, para));
+		return std::make_shared(FSPNVolume (grided_sdf, para));
 	}
 }

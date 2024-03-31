@@ -29,6 +29,28 @@ namespace Alalba
 	}
 
 	template<class T>
+	struct NotEqual 
+	{
+		T level;
+		NotEqual(T _level) { level = _level; }
+		bool operator ()(T num) const 
+		{
+			return num != level;
+		}
+	};
+
+	template<class T>
+	struct Larger
+	{
+		T level;
+		Larger(T _level) { level = _level; }
+		bool operator ()(T num) const
+		{
+			return num > level;
+		}
+	};
+
+	template<class T>
 	class SparseGrid
 	{
 	public:
@@ -55,7 +77,8 @@ namespace Alalba
 			}
 		}
 
-		void Allocate(std::shared_ptr< lux::Volume<T> > field);
+		template<class F>
+		void Allocate(std::shared_ptr< lux::Volume<T> > field, F is);
 
 		void Set(INT3 index3d, const T& value);
 		
@@ -164,7 +187,7 @@ namespace Alalba
 		std::shared_ptr<SparseGridVolume<T>> grid = std::make_shared< SparseGridVolume<T> >(center, dimesion, resolution, partionSize);
 		
 		// SHOULD allocate first, but for efficiency consideration, comment this out temporaly
-		grid->Grid()->Allocate(fieldPtr);
+		grid->Grid()->Allocate(fieldPtr, NotEqual<T>(T()));
 		grid->Grid()->StampGrid(fieldPtr);
 
 		return grid;

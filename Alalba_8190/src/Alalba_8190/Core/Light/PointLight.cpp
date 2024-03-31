@@ -19,7 +19,10 @@ namespace Alalba
 		// so the grid->set() function won't new memory for blocks
 		auto start = std::chrono::system_clock::now();
 		ALALBA_INFO("Allocate Sparse Grid for light");
-		m_dsm->Grid()->Allocate(densityField);
+
+		
+
+		m_dsm->Grid()->Allocate(densityField, NotEqual<float>(0));
 		auto end = std::chrono::system_clock::now();
 		double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
 		ALALBA_TRACE("Sparse Grid Allocate Done {0}s", elapsed);
