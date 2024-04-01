@@ -11,7 +11,7 @@ namespace Alalba
 		float roughness;
 		lux::Vector translate = lux::Vector();
 		float fjump = 2.0;
-		float amplitude;
+		float amplitude = 1.0;
 		int octaves;
 	};
 

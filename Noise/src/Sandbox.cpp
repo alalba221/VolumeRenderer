@@ -47,6 +47,9 @@ public:
 
 			//Alalba::ScalarField fspn;
 			fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
+
+			// pyroclastic 
+			fspn = Alalba::Abs<float>(fspn);
 			
 			headSDF = Alalba::Add<float>(headSDF, fspn);
 
@@ -55,13 +58,9 @@ public:
 			headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
 
 
-
-
 			density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headDensity);
 	
 			color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headColor);
-
-
 
 
 			///////////////////////
@@ -125,6 +124,8 @@ public:
 
 		//Alalba::ScalarField fspn;
 		fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
+
+		fspn = Alalba::Abs<float>(fspn);
 
 		headSDF = Alalba::Add<float>(headSDF, fspn);
 

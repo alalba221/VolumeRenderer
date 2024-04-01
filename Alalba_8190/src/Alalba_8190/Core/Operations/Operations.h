@@ -12,3 +12,4 @@
 #include "Clamp.h"
 #include "Rotate.h"
 #include "EXP.h"
+#include "Abs.h"

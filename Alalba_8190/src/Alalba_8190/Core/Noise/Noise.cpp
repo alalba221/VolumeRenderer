@@ -38,7 +38,7 @@ namespace Alalba
 
 		result *= normalized_term;
 
-		return std::abs(result) * m_para.amplitude;
+		return result;
 	}
 
 }

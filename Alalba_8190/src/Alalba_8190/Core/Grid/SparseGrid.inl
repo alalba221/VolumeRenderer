@@ -37,7 +37,7 @@ namespace Alalba
 	}
 
 	template<class T>
-	template<class F>
+		template<class F>
 	inline void SparseGrid<T>::Allocate(std::shared_ptr<lux::Volume<T>> field, F is)
 	{
 		int num_block = m_blockDimension.i * m_blockDimension.j * m_blockDimension.k;
