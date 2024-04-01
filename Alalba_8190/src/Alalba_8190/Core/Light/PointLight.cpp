@@ -73,9 +73,11 @@ namespace Alalba
 	{
 		//ALALBA_ERROR(index);
 
-		lux::Vector grid_precision = m_dsm->Grid()->m_precision;
+		// lux::Vector grid_precision = m_dsm->Grid()->m_precision;
+		lux::Vector grid_precision = m_dsm->Precision();
 		lux::Vector offset = lux::Vector(index.i * grid_precision.X(), index.j * grid_precision.Y(), index.k * grid_precision.Z());
-		lux::Vector pos = m_dsm->Grid()->LLRC + offset;
+		//lux::Vector pos = m_dsm->Grid()->LLRC + offset;
+		lux::Vector pos = m_dsm->LLRC() + offset;
 
 		double smax = (m_position - pos).magnitude();
 		//ALALBA_ERROR("smax:{0}",smax);

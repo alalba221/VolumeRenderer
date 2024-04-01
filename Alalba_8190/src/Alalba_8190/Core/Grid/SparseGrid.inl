@@ -66,7 +66,7 @@ namespace Alalba
 
 				lux::Vector offset = lux::Vector(index.i * m_precision.X(), index.j * m_precision.Y(), index.k * m_precision.Z());
 				lux::Vector pos = LLRC + offset;
-
+				//ALALBA_ERROR(pos);
 				if (is(field->eval(pos)))
 				//if ((field->eval(pos)) != T())
 				{

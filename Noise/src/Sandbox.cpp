@@ -19,7 +19,7 @@ public:
 
 	virtual void OnUpdate() override
 	{
-		for (int i = 0; i < 500; i++)
+		for (int i = 0; i < 120; i++)
 		{
 			ALALBA_INFO("{0}th start", i);
 
@@ -46,7 +46,7 @@ public:
 			parm.translate = lux::Vector(0.0, 0.0, -0.1*i);
 
 			//Alalba::ScalarField fspn;
-			headSDF = Alalba::Pyroclastic<float>(headSDF, parm, 1.5f);
+			headSDF = Alalba::Noise<float>(headSDF, parm, 1.5f);
 
 			
 			Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
@@ -124,7 +124,7 @@ public:
 
 		//headSDF = Alalba::Add<float>(headSDF, fspn);
 
-		headSDF = Alalba::Pyroclastic<float>(headSDF, parm, 1.5f);
+		headSDF = Alalba::Noise<float>(headSDF, parm, 1.5f);
 
 		headDensity = Alalba::Clamp<float>(headSDF, 0.0f, 1.0f);
 		
@@ -132,8 +132,6 @@ public:
 		headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
 
 		
-
-
 		ALALBA_INFO("Grid Humanoid Density Field");
 		auto start = std::chrono::system_clock::now();
 		density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headDensity);
@@ -148,11 +146,6 @@ public:
 		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
 		ALALBA_TRACE("Grid Humanoid Color Field Done {0}s", elapsed);
 
-	
-
-	
-
-		
 
 		// lights
 		lux::Vector keyPos = lux::Vector(0, 4, 0);

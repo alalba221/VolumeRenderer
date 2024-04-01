@@ -20,7 +20,7 @@ namespace Alalba
 	private:
 
 		Noise_t m_para;
-		std::shared_ptr<FSPN> m_fspn;
+		std::unique_ptr<FSPN> m_fspn;
 		ScalarField m_sdf;
 		float m_amp;
 

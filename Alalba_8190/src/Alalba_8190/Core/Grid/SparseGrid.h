@@ -177,6 +177,13 @@ namespace Alalba
 
 		const T& DefaultValue()const { return sparseGridPtr->m_defaultValue; }
 
+		const lux::Vector& LLRC()const { return sparseGridPtr->LLRC; }
+		const lux::Vector& Precision()const { return sparseGridPtr->m_precision; }
+
+		void Set(INT3 index3d, const T& value) { sparseGridPtr->Set(index3d, value); };
+
+		//const T& Get(int i, int j, int k) const;
+		const T& Get(INT3 index3d) const { return sparseGridPtr->Get(index3d); };
 	private:
 		lux::Vector center;
 		lux::Vector dimesion;

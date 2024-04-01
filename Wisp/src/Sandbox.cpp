@@ -19,62 +19,99 @@ public:
 
 	virtual void OnUpdate() override
 	{
+		float step = 2 * M_PI / 120.0;
 		for (int i = 0; i < 500; i++)
 		{
 			ALALBA_INFO("{0}th start", i);
 
 			auto start = std::chrono::system_clock::now();
-			
+
 			std::string index = std::to_string(i);
 			size_t n = 3;
 			int precision = n - std::min(n, index.size());
 			index.insert(0, precision, '0');
-			
+
 			std::string output = "image/" + index + ".exr";
 
-			
-//////////////////
 
-			headSDF = std::make_shared<Alalba::Sphere>(lux::Vector(0.0, 0.0, 0.0), 2);
+			//lux::Matrix camRotateMatrix;
 
-			// NOISE
-			Alalba::Noise_t parm;
-			parm.amplitude = 1.5;
-			parm.frequency = 0.5;
-			parm.octaves = 4;
-			parm.roughness = 0.8;
-			parm.translate = lux::Vector(0.0, 0.0, -0.1*i);
-
-			//Alalba::ScalarField fspn;
-			fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
-			
-			headSDF = Alalba::Add<float>(headSDF, fspn);
-
-			
-			Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
-			headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
+			//camRotateMatrix = lux::rotation(lux::Vector(0.0, 1.0, 0.0), step);
+			//lux::Vector eye = camRotateMatrix * m_camera->eye();
+			//lux::Vector view = lux::Vector(0.0, 0.0, 0.0) - eye;
+			//m_camera->setEyeViewUp(eye, view, lux::Vector(0, 1, 0));
 
 
+			//////////////////////////////////
+					// NOISE
+			Alalba::Noise_t fspn1_parm;
+			fspn1_parm.frequency = 2.5;
+			fspn1_parm.octaves = 1;
+			fspn1_parm.roughness = 0.8;
+			fspn1_parm.translate = lux::Vector(0.0, 0.0, 0.0);
+
+			Alalba::Noise_t fspn2_parm;
+			fspn2_parm.frequency = 2.5 + i*0.1;
+			fspn2_parm.octaves = 2;
+			fspn2_parm.roughness = 0.8;
+			fspn2_parm.translate = lux::Vector(0.0, 0.0, 0.0);
+
+			Alalba::WispPara wisp_para;
+			wisp_para.fspn1 = fspn1_parm;
+			wisp_para.fspn2 = fspn2_parm;
+			wisp_para.numchilderen = 5000000;
+			wisp_para.den = 1.0;
+			wisp_para.clump = 0.3;
+			wisp_para.dP = lux::Vector(0.1, 0.1, 0.1);
+			wisp_para.Plocal = lux::Vector(0.0, 0.0, 0.0);
+			wisp_para.slocal = 1.5;
+
+			Alalba::GridPara gridpara;
+			gridpara.center = lux::Vector(0.0, 0.0, 0.0);
+			gridpara.dimesion = lux::Vector(4.0, 4.0, 4.0);
+			gridpara.resolution = Alalba::INT3(513, 513, 513);
+			gridpara.partionSize = 4;
+
+			ALALBA_INFO(" Wisping");
+			start = std::chrono::system_clock::now();
+			wisp = Alalba::Wisp<float>(gridpara, wisp_para);
+			auto end = std::chrono::system_clock::now();
+			double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+			ALALBA_TRACE("Wisping Done {0}s", elapsed);
+
+			Alalba::ScalarField mask = Alalba::Mask<float>(wisp);
+
+			wispColor = Alalba::Multiply<lux::Color>(woodColor, mask);
+
+			// lights
+			lux::Vector keyPos = lux::Vector(0, 4, 0);
+			m_key.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0) * 10.0, keyPos));
+
+			lux::Vector fillPos = lux::Vector(0, -4, 0);
+			m_fill.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0) * 2.0, fillPos));
+
+			lux::Vector rimPos = lux::Vector(0, 0, -4);
+			m_rim.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0) * 4.0, rimPos));
+
+			ALALBA_TRACE("Key dsm");
+			m_key->GenerateDSM(wisp, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
+			ALALBA_TRACE("Fill dsm");
+			m_fill->GenerateDSM(wisp, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
+			ALALBA_TRACE("Rim dsm");
+			m_rim->GenerateDSM(wisp, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
 
 
-			density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headDensity);
-	
-			color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headColor);
+			/////////////////////////////////////////
 
 
-
-
-			///////////////////////
-
-	
-			m_renderer->Render(*m_camera.get(), density_grid, color_grid,*m_key,*m_fill,*m_rim);
+			m_renderer->Render(*m_camera.get(), wisp, wispColor, *m_key, *m_fill, *m_rim);
 			//m_renderer->Render(*m_camera.get(), bunny_grid, bunny_color_grid);
 			m_renderer->SaveImage(output.c_str());
 
 
-			auto end = std::chrono::system_clock::now();
-			auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-			
+			end = std::chrono::system_clock::now();
+			elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
+
 			ALALBA_ERROR("{0} Done, {1}s", output, elapsed);
 
 		}
@@ -110,68 +147,63 @@ public:
 		woodColor.reset(new Alalba::ConstantColor(lux::Color(86.0 / 255, 47.0 / 255.0, 14.0 / 255.0, 1.0)));
 
 
-		/// 0. circle
-		
-
-		headSDF = std::make_shared<Alalba::Sphere>(lux::Vector(0.0, 0.0, 0.0), 2);
-
+		/// 
 		// NOISE
-		Alalba::Noise_t parm;
-		parm.amplitude = 1.5;
-		parm.frequency = 0.5;
-		parm.octaves = 4;
-		parm.roughness = 0.8;
-		parm.translate = lux::Vector(0.0, 0.0, 0.0);
+		Alalba::Noise_t fspn1_parm;
+		fspn1_parm.frequency = 2.5;
+		fspn1_parm.octaves = 1;
+		fspn1_parm.roughness = 0.8;
+		fspn1_parm.translate = lux::Vector(0.0, 0.0, 0.0);
 
-		//Alalba::ScalarField fspn;
-		fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
+		Alalba::Noise_t fspn2_parm;
+		fspn2_parm.frequency = 0.5;
+		fspn2_parm.octaves = 2;
+		fspn2_parm.roughness = 0.8;
+		fspn2_parm.translate = lux::Vector(0.0, 0.0, 0.0);
 
-		headSDF = Alalba::Add<float>(headSDF, fspn);
+		Alalba::WispPara wisp_para;
+		wisp_para.fspn1 = fspn1_parm;
+		wisp_para.fspn2 = fspn2_parm;
+		wisp_para.numchilderen = 5000000;
+		wisp_para.den = 1.0;
+		wisp_para.clump = 0.3;
+		wisp_para.dP = lux::Vector(0.1, 0.1, 0.1);
+		wisp_para.Plocal = lux::Vector(0.0, 0.0, 0.0);
+		wisp_para.slocal = 1.5;
 
-		headDensity = Alalba::Clamp<float>(headSDF, 0.0f, 1.0f);
+		Alalba::GridPara gridpara;
+		gridpara.center = lux::Vector(0.0, 0.0, 0.0);
+		gridpara.dimesion = lux::Vector(4.0, 4.0, 4.0);
+		gridpara.resolution = Alalba::INT3(513, 513, 513);
+		gridpara.partionSize = 4;
 		
-		Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
-		headColor = Alalba::Multiply<lux::Color>(woodColor, mask);
-
-		
-
-
-		ALALBA_INFO("Grid Humanoid Density Field");
+		ALALBA_INFO(" Wisping");
 		auto start = std::chrono::system_clock::now();
-		density_grid = Alalba::Grid<float>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headDensity);
+		wisp = Alalba::Wisp<float>(gridpara, wisp_para);
 		auto end = std::chrono::system_clock::now();
 		double  elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_TRACE("Grid Humanoid Density Field Done {0}s", elapsed);
-		
-		ALALBA_INFO("Grid Humanoid Color Field");
-		start = std::chrono::system_clock::now();
-		color_grid = Alalba::Grid<lux::Color>(lux::Vector(0.0, 0.0, 0.0), lux::Vector(4.0, 4.0, 4.0), { 513,513,513 }, 4, headColor);
-		end = std::chrono::system_clock::now();
-		elapsed = std::chrono::duration_cast<std::chrono::seconds>(end - start).count();
-		ALALBA_TRACE("Grid Humanoid Color Field Done {0}s", elapsed);
+		ALALBA_TRACE("Wisping Done {0}s", elapsed);
 
-	
+		Alalba::ScalarField mask = Alalba::Mask<float>(wisp);
 
-	
-
-		
+		wispColor = Alalba::Multiply<lux::Color>(woodColor, mask);
 
 		// lights
 		lux::Vector keyPos = lux::Vector(0, 4, 0);
-		m_key.reset( new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0)*10.0, keyPos));
+		m_key.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0) * 10.0, keyPos));
 
 		lux::Vector fillPos = lux::Vector(0, -4, 0);
-		m_fill.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0)*2.0, fillPos));
+		m_fill.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0) * 2.0, fillPos));
 
 		lux::Vector rimPos = lux::Vector(0, 0, -4);
-		m_rim.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0)*4.0, rimPos));
-		
+		m_rim.reset(new Alalba::PointLight(lux::Color(1.0, 1.0, 1.0, 1.0) * 4.0, rimPos));
+
 		ALALBA_TRACE("Key dsm");
-		m_key->GenerateDSM(density_grid, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), {200,200,200 },8, 0.1,2.0);
+		m_key->GenerateDSM(wisp, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
 		ALALBA_TRACE("Fill dsm");
-		m_fill->GenerateDSM(density_grid, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
+		m_fill->GenerateDSM(wisp, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
 		ALALBA_TRACE("Rim dsm");
-		m_rim->GenerateDSM(density_grid, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
+		m_rim->GenerateDSM(wisp, lux::Vector(0, 0, 0), lux::Vector(4, 4, 4), { 200,200,200 }, 8, 0.1, 2.0);
 		
 	}
 
@@ -187,9 +219,9 @@ private:
 	// test noise
 	Alalba::ColorField woodColor;
 
-	Alalba::ScalarField headSDF;
+	Alalba::ScalarField wisp;
 	Alalba::ScalarField headDensity;
-	Alalba::ColorField headColor;
+	Alalba::ColorField wispColor;
 	// 
 
 	Alalba::ScalarField density_grid;
