@@ -23,6 +23,15 @@ namespace Alalba
 		int k;
 	};
 
+	struct GridPara
+	{
+		lux::Vector center;
+		lux::Vector dimesion;
+		INT3 resolution;
+		int partionSize;
+	};
+
+
 	inline std::ostream& operator<<(std::ostream& os, const INT3& e)
 	{
 		return os << e.ToString();

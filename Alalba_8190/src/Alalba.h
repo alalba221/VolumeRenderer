@@ -24,4 +24,5 @@
 #include "Alalba_8190/Core/Mesh/LevelSet.h"
 
 #include "Alalba_8190/Core/Light/PointLight.h"
-#include "Alalba_8190/Core/Noise/Noise.cpp"
+#include "Alalba_8190/Core/Noise/Noise.h"
+#include "Alalba_8190/Core/Noise/Pyroclastic.h"

@@ -39,19 +39,14 @@ public:
 
 			// NOISE
 			Alalba::Noise_t parm;
-			parm.amplitude = 1.5;
+			
 			parm.frequency = 0.5;
 			parm.octaves = 4;
 			parm.roughness = 0.8;
 			parm.translate = lux::Vector(0.0, 0.0, -0.1*i);
 
 			//Alalba::ScalarField fspn;
-			fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
-
-			// pyroclastic 
-			fspn = Alalba::Abs<float>(fspn);
-			
-			headSDF = Alalba::Add<float>(headSDF, fspn);
+			headSDF = Alalba::Pyroclastic<float>(headSDF, parm, 1.5f);
 
 			
 			Alalba::ScalarField mask = Alalba::Mask<float>(headSDF);
@@ -116,18 +111,20 @@ public:
 
 		// NOISE
 		Alalba::Noise_t parm;
-		parm.amplitude = 1.5;
+		//parm.amplitude = 1.5;
 		parm.frequency = 0.5;
 		parm.octaves = 4;
 		parm.roughness = 0.8;
 		parm.translate = lux::Vector(0.0, 0.0, 0.0);
 
 		//Alalba::ScalarField fspn;
-		fspn.reset(new Alalba::FSPNVolume(parm, headSDF));
+		//pyroclastic.reset(new Alalba::PyroVolume(parm, headSDF));
 
-		fspn = Alalba::Abs<float>(fspn);
+		//fspn = Alalba::Abs<float>(fspn);
 
-		headSDF = Alalba::Add<float>(headSDF, fspn);
+		//headSDF = Alalba::Add<float>(headSDF, fspn);
+
+		headSDF = Alalba::Pyroclastic<float>(headSDF, parm, 1.5f);
 
 		headDensity = Alalba::Clamp<float>(headSDF, 0.0f, 1.0f);
 		
@@ -196,7 +193,7 @@ private:
 	Alalba::ScalarField density_grid;
 	Alalba::ColorField color_grid;
 	
-	Alalba::ScalarField fspn;
+	Alalba::ScalarField pyroclastic;
 
 	std::unique_ptr<lux::Camera> m_camera;
 	std::unique_ptr<Alalba::Renderer> m_renderer;
