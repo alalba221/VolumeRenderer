@@ -12,8 +12,8 @@ namespace Alalba
 			:m_fieldPtr1(fieldPtr1), m_fieldPtr2(fieldPtr2) {};
 		~AddVolume() {};
 
-		virtual const T eval(const lux::Vector& P) const override { return m_fieldPtr1->eval(P)+ m_fieldPtr2->eval(P); };
-
+		virtual const volumeDataType eval(const lux::Vector& P) const override { return m_fieldPtr1->eval(P) + m_fieldPtr2->eval(P); };
+		virtual const volumeGradType grad(const lux::Vector& P) const override { return m_fieldPtr1->grad(P) + m_fieldPtr2->grad(P); };
 	private:
 
 		std::shared_ptr< lux::Volume<T> > m_fieldPtr1;

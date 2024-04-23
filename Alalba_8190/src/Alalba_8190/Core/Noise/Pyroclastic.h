@@ -22,6 +22,7 @@ namespace Alalba
 		Noise_t m_para;
 		std::unique_ptr<FSPN> m_fspn;
 		ScalarField m_sdf;
+		VectorField m_cpt;
 		float m_amp;
 
 	};

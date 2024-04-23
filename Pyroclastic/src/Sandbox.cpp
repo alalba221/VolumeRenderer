@@ -8,7 +8,16 @@ class Sandbox : public Alalba::Application
 public:
 	Sandbox()
 	{
+		//test
+		//Alalba::IdentityVectorField I;
+		//Alalba::VectorField a;
+		//a.reset(new Alalba::IdentityVectorField());
+		//Alalba::VectorField b;
+		//b.reset(new Alalba::IdentityVectorField());
+		//Alalba::ScalarField s;
+		//s = Alalba::Multiply < lux::Vector, lux::Vector >(a, b);
 
+		//ALALBA_ERROR(s->eval(lux::Vector(2, 0, 3)));
 	}
 
 

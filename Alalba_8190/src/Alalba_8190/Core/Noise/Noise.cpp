@@ -11,9 +11,6 @@ namespace Alalba
 
 	const float NoiseVolume::eval(const lux::Vector& P) const
 	{
-		// for circlr only 
-		float radius = 2.0;
-		lux::Vector center = lux::Vector(0, 0, 0);
 
 		float f = m_sdf->eval(P);
 		//lux::Vector cpt = (P - center).unitvector() * radius;

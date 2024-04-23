@@ -13,7 +13,7 @@ namespace Alalba
 			:m_fieldPtr1(fieldPtr1), m_fieldPtr2(fieldPtr2) {};
 		~UnionVolume() {};
 
-		virtual const T eval(const lux::Vector& P) const override { return T(); };
+		virtual const volumeDataType eval(const lux::Vector& P) const override { return T(); };
 
 	private:
 

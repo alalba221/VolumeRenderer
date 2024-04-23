@@ -11,7 +11,7 @@ namespace Alalba
 			:m_fieldPtr1(fieldPtr1) {};
 		~MaskVolume() {};
 
-		virtual const T eval(const lux::Vector& P) const override { return T; };
+		virtual const volumeDataType eval(const lux::Vector& P) const override { return T; };
 
 	private:
 

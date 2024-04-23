@@ -12,7 +12,7 @@ namespace Alalba
 			:m_fieldPtr1(fieldPtr1) {};
 		~AbsVolume() {};
 
-		virtual const T eval(const lux::Vector& P) const override { return std::abs(m_fieldPtr1->eval(P)); };
+		virtual const volumeDataType eval(const lux::Vector& P) const override { return std::abs(m_fieldPtr1->eval(P)); };
 
 	private:
 

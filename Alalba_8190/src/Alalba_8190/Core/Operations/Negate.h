@@ -12,8 +12,9 @@ namespace Alalba
 			:m_fieldPtr1(fieldPtr1) {};
 		~NegateVolume() {};
 
-		virtual const T eval(const lux::Vector& P) const override { return -m_fieldPtr1->eval(P); };
-
+		virtual const volumeDataType eval(const lux::Vector& P) const override { return -m_fieldPtr1->eval(P); };
+		virtual const volumeGradType grad(const lux::Vector& P) const override { return -m_fieldPtr1->grad(P); };
+	
 	private:
 
 		std::shared_ptr< lux::Volume<T> > m_fieldPtr1;

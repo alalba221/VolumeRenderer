@@ -13,3 +13,7 @@
 #include "Rotate.h"
 #include "EXP.h"
 #include "Abs.h"
+#include "Gradient.h"
+#include "CPT.h"
+#include "Warp.h"
+#include "Divide.h"
