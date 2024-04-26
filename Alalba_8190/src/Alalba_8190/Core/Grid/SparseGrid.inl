@@ -267,6 +267,8 @@ namespace Alalba
 	template <class T>
 	T SparseGrid<T>::eval(const lux::Vector& P)
 	{
+		if (!isInside(P))
+			return T();
 
 		INT3 closet_llc = Index(P);
 		int i = closet_llc.i;

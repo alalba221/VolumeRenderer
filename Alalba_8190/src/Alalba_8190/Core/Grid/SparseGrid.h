@@ -156,6 +156,7 @@ namespace Alalba
 
 	typedef std::shared_ptr<SparseGrid<float>> ScalarSparseGrid;
 	typedef std::shared_ptr < SparseGrid<lux::Color>> ColorSparseGrid;
+	typedef std::shared_ptr < SparseGrid<lux::Vector>> VectorSparseGrid;
 	
 	/// SparseGridVolume
 	template<typename T>

@@ -8,7 +8,7 @@ namespace Alalba
 	void Log::Init()
 	{
 		spdlog::set_pattern("%^[%T] %n: %v%$");
-		s_Logger = spdlog::stdout_color_mt("ALALBA_VK");
+		s_Logger = spdlog::stdout_color_mt<spdlog::async_factory>("ALALBA_VK");
 		s_Logger->set_level(spdlog::level::trace);
 	}
 }
